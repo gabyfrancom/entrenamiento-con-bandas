@@ -1,0 +1,1173 @@
+<!doctype html>
+<html lang="es" data-tema="oscuro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#111a21">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bandas">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Bandas en casa</title>
+<style>
+/* ============ Tokens ============ */
+:root{
+  --bg:#111a21; --s1:#18232c; --s2:#1f2d39; --s3:#2a3b4a; --line:#2b3c4a;
+  --tx:#edf1ea; --mut:#8ea0ad;
+  --acc:#f5cf47; --acc-i:#211a00;
+  --work:#f5cf47; --rest:#5aa9f0; --ok:#62c98f; --bad:#ef6b5b;
+  --font:ui-rounded,"SF Pro Rounded","Nunito","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+}
+:root[data-tema="claro"]{
+  --bg:#f3f1e9; --s1:#ffffff; --s2:#ebe8dd; --s3:#dcd8ca; --line:#d6d2c4;
+  --tx:#17222b; --mut:#5f6c75;
+  --acc:#f2c320; --acc-i:#211a00;
+  --work:#c99700; --rest:#2a7fd0; --ok:#1f9d63; --bad:#d64533;
+}
+@media (prefers-color-scheme:light){
+  :root[data-tema="auto"]{
+    --bg:#f3f1e9; --s1:#ffffff; --s2:#ebe8dd; --s3:#dcd8ca; --line:#d6d2c4;
+    --tx:#17222b; --mut:#5f6c75;
+    --acc:#f2c320; --acc-i:#211a00;
+    --work:#c99700; --rest:#2a7fd0; --ok:#1f9d63; --bad:#d64533;
+  }
+}
+
+/* ============ Base ============ */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{color-scheme:dark}
+html[data-tema="claro"]{color-scheme:light}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.45 var(--font);-webkit-text-size-adjust:100%}
+body.noscroll{overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+input,select{font:inherit;color:var(--tx);background:var(--s2);border:1.5px solid var(--line);border-radius:14px;min-height:48px;padding:0 12px;width:100%}
+input[type=search]{-webkit-appearance:none;appearance:none}
+input[type=checkbox]{width:auto;min-height:0;padding:0;border:0;background:none}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+h1,h2,h3,p{margin:0}
+h1{font-size:30px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:22px;font-weight:800;letter-spacing:-.01em}
+h3{font-size:17px;font-weight:700}
+small,.hint{color:var(--mut);font-size:14px}
+.hint{margin:4px 0 10px}
+
+#app{max-width:560px;margin:0 auto;min-height:100dvh;padding:0 16px calc(96px + env(safe-area-inset-bottom))}
+#topbar{padding:calc(16px + env(safe-area-inset-top)) 0 6px}
+.fecha{color:var(--mut);font-size:15px;margin-top:2px}
+
+/* ============ Navegación ============ */
+#tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--s1);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+#tabs div{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+#tabs button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0 9px;font-size:12.5px;font-weight:600;color:var(--mut);min-height:64px}
+#tabs button svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+#tabs button.on{color:var(--acc)}
+:root[data-tema="claro"] #tabs button.on{color:var(--tx)}
+#tabs button.on span{border-bottom:3px solid var(--acc);padding-bottom:1px}
+
+/* ============ Componentes ============ */
+.card{background:var(--s1);border:1px solid var(--line);border-radius:22px;padding:16px;margin:12px 0}
+.card>h3{margin-bottom:2px}
+.btn{min-height:52px;padding:0 20px;border-radius:16px;background:var(--s3);font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center}
+.btn.primary{background:var(--acc);color:var(--acc-i)}
+.btn.ghost{background:transparent;border:1.5px solid var(--line)}
+.btn.danger{color:var(--bad)}
+.btn.sm{min-height:44px;padding:0 14px;border-radius:12px;font-size:14.5px}
+.btn.block{width:100%}
+.btn.big{min-height:78px;font-size:24px;border-radius:24px;width:100%}
+.btn[disabled]{opacity:.45;cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row.sp{justify-content:space-between}
+.row>.grow{flex:1}
+.stack>*+*{margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:0 14px;min-height:44px;border-radius:999px;background:var(--s2);border:1.5px solid var(--line);font-size:14.5px;font-weight:600}
+.chip.on{background:var(--acc);border-color:var(--acc);color:var(--acc-i)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips.scroll{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px;padding:2px 16px 6px;scrollbar-width:none}
+.chips.scroll::-webkit-scrollbar{display:none}
+.chips.scroll .chip{flex:none}
+.tag{display:inline-block;padding:2px 10px;border-radius:999px;background:var(--s3);color:var(--mut);font-size:12.5px;font-weight:600}
+.warn{background:rgba(239,107,91,.14);border:1px solid rgba(239,107,91,.45);background:color-mix(in srgb,var(--bad) 14%,transparent);border-color:color-mix(in srgb,var(--bad) 45%,transparent);border-radius:14px;padding:10px 12px;font-size:14px;margin-top:10px}
+.note{background:var(--s2);border-radius:14px;padding:10px 12px;font-size:14px;color:var(--mut);margin-top:10px}
+.empty{text-align:center;color:var(--mut);padding:28px 8px}
+
+/* Semana */
+.semana{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:14px 0 4px}
+.dia{display:flex;flex-direction:column;align-items:center;gap:1px;padding:8px 0 8px;border-radius:14px;background:var(--s1);border:1.5px solid var(--line);min-height:70px}
+.dia.hoy{border-color:var(--acc);background:var(--s2)}
+.dia .dl{font-size:12.5px;color:var(--mut);font-weight:700}
+.dia .dn{font-size:18px;font-weight:800}
+.dia .pts{display:flex;gap:3px;height:8px;margin-top:3px;align-items:center}
+.pt{width:7px;height:7px;border-radius:50%;background:var(--acc)}
+.pt.ok{background:var(--ok)}
+.pt.lib{background:var(--rest)}
+.pt.off{background:var(--s3)}
+
+/* Rutinas y ejercicios */
+.rut h3{font-size:19px}
+.rut .desc{color:var(--mut);font-size:15px;margin:2px 0 8px}
+.rut .meta{font-size:14px;color:var(--mut)}
+.dias{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:12px 0}
+.dias .chip{padding:0;justify-content:center;min-height:44px}
+.acciones{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.acciones .primary{grid-column:1/-1}
+.filtros{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0 4px}
+.ex{display:block;width:100%;text-align:left;background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:13px 14px;margin:8px 0}
+.ex.pick{display:flex;align-items:center;gap:10px}
+.ex .n{font-weight:700;font-size:16.5px}
+.ex .m{color:var(--mut);font-size:14px;margin-top:1px}
+.ex .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.grp{font-weight:700;color:var(--mut);font-size:14px;margin:18px 0 2px}
+
+/* Formularios */
+.field{margin:10px 0}
+.field>label{display:block;font-weight:700;margin-bottom:6px;font-size:15px}
+.banda{display:grid;grid-template-columns:22px 1fr 1fr 44px;gap:8px;align-items:center;margin:10px 0;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.banda:last-of-type{border-bottom:0}
+.banda input.nota{grid-column:2 / 4}
+.dot{width:20px;height:20px;border-radius:50%;border:2px solid var(--mut)}
+.x{width:44px;height:44px;border-radius:12px;font-size:24px;line-height:1;color:var(--mut);display:inline-flex;align-items:center;justify-content:center}
+.sw{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 0;font-weight:600}
+.sw input{width:26px;height:26px;accent-color:var(--acc)}
+.foot{color:var(--mut);font-size:13.5px;text-align:center;margin:18px 8px}
+
+/* Steppers (editor) */
+.eit{background:var(--s2);border-radius:18px;padding:12px;margin:10px 0}
+.eit-n{font-weight:700}
+.eit-c{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;margin-top:10px}
+.stpw small{display:block;font-size:12.5px;margin-bottom:3px}
+.stp{display:inline-flex;align-items:center;background:var(--s1);border-radius:12px;border:1px solid var(--line)}
+.stp button{width:44px;height:44px;font-size:22px;font-weight:700}
+.stp span{min-width:40px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+.eit-o{margin-left:auto;display:flex}
+.eit-o button{width:44px;height:44px;color:var(--mut);font-size:16px}
+
+/* ============ Hojas (sheets) ============ */
+.backdrop{position:fixed;inset:0;background:rgba(4,8,12,.6);z-index:50}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-width:560px;margin:0 auto;max-height:90dvh;z-index:51;background:var(--s1);border-radius:26px 26px 0 0;display:flex;flex-direction:column;animation:up .2s ease-out;border:1px solid var(--line);border-bottom:0}
+.sheet.full{top:0;max-height:none;border-radius:0;border:0}
+.sheet>header{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 10px 8px 18px;min-height:64px}
+.sheet.full>header{padding-top:calc(10px + env(safe-area-inset-top))}
+.sheet-body{overflow:auto;padding:0 18px calc(24px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.sheet-foot{padding:12px 18px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);display:flex;gap:10px}
+.sheet-foot .btn{flex:1;padding:0 10px}
+.modal{position:fixed;left:16px;right:16px;top:50%;transform:translateY(-50%);max-width:420px;margin:0 auto;z-index:51;background:var(--s1);border:1px solid var(--line);border-radius:24px;padding:20px}
+@keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+.ficha h4{margin:16px 0 4px;font-size:15px;font-weight:800}
+.ficha p,.ficha li{font-size:16px}
+.ficha ol,.ficha ul{margin:4px 0;padding-left:22px}
+.ficha li+li{margin-top:4px}
+.ficha .hd{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 4px}
+.ficha .pain{margin-top:18px}
+
+/* ============ Entrenamiento ============ */
+#train{position:fixed;inset:0;z-index:40;background:var(--bg);display:flex;flex-direction:column}
+#train[hidden]{display:none}
+.tr{display:flex;flex-direction:column;height:100%;max-width:560px;width:100%;margin:0 auto}
+.tr-top{display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 12px 6px}
+.tr-top .ttl{flex:1;min-width:0}
+.tr-top .ttl b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr-top .ttl span{font-size:13.5px;color:var(--mut)}
+.tr-bar{display:flex;gap:4px;padding:6px 16px}
+.tr-bar i{flex:1;height:6px;border-radius:3px;background:var(--s3)}
+.tr-bar i.done{background:var(--ok)}
+.tr-bar i.cur{background:var(--work)}
+.tr.rest .tr-bar i.cur{background:var(--rest)}
+.tr-main{flex:1;overflow:auto;padding:6px 20px 12px;text-align:center;display:flex;flex-direction:column;align-items:center}
+.tr-set{color:var(--mut);font-weight:700;margin-top:8px}
+.tr-name{font-size:clamp(26px,8vw,36px);line-height:1.1;margin:4px 0 4px;letter-spacing:-.02em}
+.tr-sub{color:var(--mut);font-size:15px}
+.ring{position:relative;width:min(70vw,44dvh,300px);aspect-ratio:1;margin:10px auto}
+.ring svg{width:100%;height:100%;display:block}
+.ring .track{stroke:var(--s3)}
+.ring .prog{stroke:var(--work);transition:stroke-dashoffset .25s linear}
+.ring.rest .prog{stroke:var(--rest)}
+.ring.paused{opacity:.45}
+.ring .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.mid .big{font-size:clamp(56px,20vw,92px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1;letter-spacing:-.03em}
+.mid .lbl{color:var(--mut);font-weight:700;margin-top:2px}
+.mid .clk{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums;margin-top:6px;color:var(--mut)}
+.tip{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:10px 14px;font-size:14.5px;text-align:left;width:100%;margin-top:6px}
+.tip b{font-weight:800}
+.linkbtn{color:var(--acc);font-weight:700;min-height:44px;padding:0 12px;text-decoration:underline;text-underline-offset:3px}
+:root[data-tema="claro"] .linkbtn{color:var(--tx)}
+.tr-actions{padding:10px 16px calc(14px + env(safe-area-inset-bottom));display:grid;gap:10px}
+.tr-actions .two{display:grid;grid-template-columns:1fr 1.5fr;gap:10px}
+.safe{padding:16px 20px;flex:1;overflow:auto}
+.safe ul{padding-left:22px;margin:10px 0}
+.safe li{margin:8px 0;font-size:17px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:18px 0}
+.stat{background:var(--s1);border:1px solid var(--line);border-radius:18px;padding:14px 6px;text-align:center}
+.stat b{display:block;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+.stat span{font-size:13px;color:var(--mut)}
+
+#toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(8px);background:var(--tx);color:var(--bg);padding:11px 18px;border-radius:999px;font-weight:700;z-index:70;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;max-width:90vw;text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<noscript>Esta app necesita JavaScript para funcionar.</noscript>
+<div id="app">
+  <header id="topbar"><h1 id="title">Hoy</h1></header>
+  <main id="view"></main>
+</div>
+<nav id="tabs" aria-label="Secciones"><div>
+  <button data-act="tab" data-v="hoy"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><span>Hoy</span></button>
+  <button data-act="tab" data-v="rutinas"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><span>Rutinas</span></button>
+  <button data-act="tab" data-v="ejercicios"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6M7 6v12M17 6v12M21 9v6M7 12h10"/></svg><span>Ejercicios</span></button>
+  <button data-act="tab" data-v="ajustes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/><circle cx="9" cy="6" r="2.2" style="fill:var(--s1)"/><circle cx="15" cy="12" r="2.2" style="fill:var(--s1)"/><circle cx="8" cy="18" r="2.2" style="fill:var(--s1)"/></svg><span>Ajustes</span></button>
+</div></nav>
+<div id="train" hidden></div>
+<div id="sheets"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="file" accept=".json,application/json" hidden>
+
+<script>
+(function(){
+'use strict';
+
+/* =====================================================================
+   Utilidades
+   ===================================================================== */
+const $=(s,r=document)=>r.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad=n=>String(n).padStart(2,'0');
+const uid=p=>p+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const norm=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const fmt=s=>{s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+pad(s%60);};
+const isoDate=(d=new Date())=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const diaIdx=(d=new Date())=>(d.getDay()+6)%7;   // 0 = lunes
+
+const DIAS=['L','M','X','J','V','S','D'];
+const DIAS_L=['lunes','martes','miércoles','jueves','viernes','sábado','domingo'];
+
+/* =====================================================================
+   Datos: ejercicios (30 de fuerza + 6 de calentamiento / vuelta a la calma)
+   Campos: g grupo, sec secundarios, b tipos de banda posibles, anc anclaje,
+   ini posición inicial, pasos, resp, err, fac, dif, t 'r' reps | 's' segundos,
+   s series por defecto, v reps o segundos por defecto, u unidad, c categoría
+   ===================================================================== */
+const GRUPOS=['piernas','glúteos','espalda','pecho','hombros','brazos','core','movilidad'];
+const TIPOS={mini:'Mini band (loop)',asas:'Banda con asas o tubo',power:'Banda larga (power band)'};
+const TIPOS_C={mini:'Mini band',asas:'Asas / tubo',power:'Banda larga'};
+const COLORES=[['amarillo','Amarillo','#f2d13e'],['verde','Verde','#4cc38a'],['rojo','Rojo','#ef5350'],['azul','Azul','#4f8ef7'],['negro','Negro','#22282e'],['morado','Morado','#a26bf0'],['naranja','Naranja','#ff9a3d'],['otro','Otro','#9aa0a6']];
+const colorHex=id=>(COLORES.find(c=>c[0]===id)||COLORES[7])[2];
+
+const puerta=h=>'Banda anclada '+h+' en una puerta cerrada que se abra hacia el lado contrario al tuyo (así, al tirar, la puerta empuja contra el marco). Usa un anclaje de puerta o un nudo grande y comprueba que no cede antes de empezar.';
+
+const EJ=[
+/* ---------- PIERNAS ---------- */
+{id:'sentadilla-mini',n:'Sentadilla con mini band',g:'piernas',sec:['glúteos','core'],b:['mini'],
+ anc:'Sin anclaje: la mini band va justo encima de las rodillas.',
+ ini:'De pie, pies algo más anchos que los hombros, puntas ligeramente hacia fuera. Mini band sobre las rodillas.',
+ pasos:['Lleva la cadera hacia atrás y abajo, como si te sentaras.','Empuja las rodillas hacia fuera contra la banda; que no se vayan hacia dentro.','Baja hasta donde mantengas la espalda recta y los talones en el suelo.','Sube empujando el suelo con todo el pie.'],
+ resp:'Inhala al bajar, exhala al subir.',
+ err:['Las rodillas se van hacia dentro.','Los talones se despegan del suelo.','La espalda se redondea.'],
+ fac:'Sentadilla hasta tocar una silla y volver a subir.',dif:'Pausa de 2 segundos abajo o una banda más fuerte.',t:'r',s:3,v:12},
+{id:'sentadilla-pisada',n:'Sentadilla con banda pisada',g:'piernas',sec:['glúteos','core'],b:['asas','power'],
+ anc:'Pisa la banda con los dos pies; los extremos o asas quedan a la altura de los hombros.',
+ ini:'De pie sobre el centro de la banda, pies al ancho de los hombros. Sujeta los extremos junto a los hombros, codos por delante.',
+ pasos:['Con las manos fijas en los hombros, lleva la cadera atrás y baja.','Pecho alto, mirada al frente, peso repartido por todo el pie.','Sube estirando cadera y rodillas.'],
+ resp:'Inhala al bajar, exhala al subir.',
+ err:['Dejar que la banda tire de los hombros hacia delante.','Inclinar demasiado el torso.'],
+ fac:'Menos profundidad o una banda más ligera.',dif:'Pausa de 2 segundos abajo o una banda más fuerte (comprueba que no resbala bajo el pie).',t:'r',s:3,v:12},
+{id:'zancada-atras',n:'Zancada atrás con banda',g:'piernas',sec:['glúteos','core'],b:['asas','power'],
+ anc:'Pisa la banda con el pie que queda delante; los extremos a la altura de los hombros.',
+ ini:'De pie con un pie sobre la banda y las manos junto a los hombros. El otro pie, atrás, listo para dar el paso.',
+ pasos:['Da un paso largo hacia atrás.','Baja la rodilla de atrás hacia el suelo sin llegar a tocarlo.','Rodilla delantera alineada con el pie, sin pasar hacia dentro.','Empuja con la pierna de delante para volver al inicio.'],
+ resp:'Inhala al bajar, exhala al subir.',
+ err:['La rodilla delantera cae hacia dentro.','Pasos demasiado cortos que cargan la rodilla.'],
+ fac:'Sin banda y con una mano apoyada en una pared o silla.',dif:'Pausa abajo de 2 segundos o una banda más fuerte.',t:'r',s:3,v:10,u:'reps por lado'},
+{id:'peso-muerto-rumano',n:'Peso muerto rumano con banda',g:'piernas',sec:['glúteos','espalda'],b:['asas','power'],
+ anc:'Pisa la banda con los dos pies; agarra los extremos a los lados de los muslos.',
+ ini:'De pie sobre la banda, pies al ancho de las caderas, rodillas ligeramente flexionadas, espalda recta.',
+ pasos:['Lleva la cadera hacia atrás y baja el torso; las manos resbalan cerca de las piernas.','Baja hasta notar tensión en la parte trasera del muslo, sin redondear la espalda.','Empuja la cadera hacia delante para volver a estar de pie.'],
+ resp:'Inhala al bajar, exhala al subir.',
+ err:['Redondear la espalda.','Convertirlo en sentadilla doblando demasiado las rodillas.'],
+ fac:'Menos recorrido: baja solo hasta las rodillas.',dif:'Una banda más fuerte o hacerlo a una pierna con apoyo.',t:'r',s:3,v:12},
+{id:'elevacion-talones',n:'Elevación de talones con banda',g:'piernas',sec:[],b:['asas','power'],
+ anc:'Pisa la banda con la parte delantera de los pies; sujeta los extremos a los lados.',
+ ini:'De pie, banda bajo la parte delantera de los pies, extremos a los lados de las caderas. Apoya una mano en la pared si lo necesitas.',
+ pasos:['Sube de puntillas todo lo que puedas.','Pausa breve arriba.','Baja despacio hasta apoyar los talones.'],
+ resp:'Exhala al subir, inhala al bajar.',
+ err:['Rebotar sin control.','Doblar las rodillas para ayudarte.'],
+ fac:'Sin banda, con una mano en la pared.',dif:'Hazlo a una pierna.',t:'r',s:3,v:15},
+/* ---------- GLÚTEOS ---------- */
+{id:'puente-gluteo-mini',n:'Puente de glúteos con mini band',g:'glúteos',sec:['piernas','core'],b:['mini'],
+ anc:'Sin anclaje: la mini band va sobre las rodillas.',
+ ini:'Boca arriba, rodillas dobladas, pies apoyados al ancho de las caderas, mini band sobre las rodillas.',
+ pasos:['Empuja los talones contra el suelo y sube la cadera apretando los glúteos.','Mantén las rodillas abiertas contra la banda.','Llega a una línea recta de hombros a rodillas, sin arquear la zona lumbar.','Baja despacio.'],
+ resp:'Exhala al subir, inhala al bajar.',
+ err:['Arquear la zona lumbar en vez de subir con el glúteo.','Las rodillas se van hacia dentro.'],
+ fac:'Sin banda o con una pausa corta arriba.',dif:'Pausa de 3 segundos arriba o hazlo a una pierna.',t:'r',s:3,v:15},
+{id:'caminata-lateral',n:'Caminata lateral con mini band',g:'glúteos',sec:['piernas'],b:['mini'],
+ anc:'Sin anclaje: la mini band va sobre las rodillas o los tobillos.',
+ ini:'De pie, pies al ancho de las caderas, rodillas ligeramente flexionadas y la banda con algo de tensión.',
+ pasos:['Da un paso hacia el lado abriendo la pierna, sin juntar del todo los pies.','Sigue con la otra pierna manteniendo la tensión.','Haz todos los pasos hacia un lado y vuelve hacia el otro.'],
+ resp:'Respira con normalidad, sin aguantar el aire.',
+ err:['Caminar con los pies muy juntos (se pierde tensión).','Inclinar el torso hacia el lado.'],
+ fac:'Banda sobre las rodillas o más ligera.',dif:'Banda en los tobillos o más fuerte, con una sentadilla ligera mientras caminas.',t:'r',s:3,v:10,u:'pasos por lado'},
+{id:'patada-gluteo',n:'Patada de glúteo a cuatro apoyos',g:'glúteos',sec:['core'],b:['mini'],
+ anc:'Sin anclaje: la mini band va sobre las rodillas.',
+ ini:'A cuatro apoyos: manos bajo los hombros, rodillas bajo las caderas, mini band sobre las rodillas y espalda recta.',
+ pasos:['Sin girar la cadera, lleva un pie hacia el techo con la rodilla doblada.','Aprieta el glúteo arriba sin arquear la zona lumbar.','Baja con control sin apoyar la rodilla.'],
+ resp:'Exhala al subir la pierna.',
+ err:['Arquear la espalda baja.','Abrir la cadera hacia fuera.'],
+ fac:'Sin banda, o solo llevar la rodilla hacia atrás.',dif:'Pausa de 2 segundos arriba o una banda más fuerte.',t:'r',s:3,v:12,u:'reps por lado'},
+{id:'almeja',n:'Almeja con mini band',g:'glúteos',sec:['piernas'],b:['mini'],
+ anc:'Sin anclaje: la mini band va sobre las rodillas.',
+ ini:'Tumbado de lado con la cabeza apoyada, rodillas dobladas unos 45°, pies juntos y la mini band sobre las rodillas.',
+ pasos:['Sin separar los pies, abre la rodilla de arriba como una concha.','No gires la cadera hacia atrás: el movimiento sale del glúteo.','Cierra despacio.'],
+ resp:'Exhala al abrir.',
+ err:['Girar la pelvis hacia atrás.','Ir demasiado rápido.'],
+ fac:'Sin banda.',dif:'Banda más fuerte o pausa de 2 segundos arriba.',t:'r',s:3,v:12,u:'reps por lado'},
+{id:'abduccion-pie',n:'Abducción de cadera de pie',g:'glúteos',sec:['piernas'],b:['mini'],
+ anc:'Sin anclaje: la mini band va sobre los tobillos. Apoya una mano en una pared o silla.',
+ ini:'De pie junto a una pared, mini band en los tobillos, torso recto.',
+ pasos:['Lleva una pierna hacia el lado, con la punta del pie al frente.','Mantén el torso recto, sin inclinarte.','Vuelve despacio sin dejar que la banda te arrastre.'],
+ resp:'Exhala al abrir la pierna.',
+ err:['Inclinar el torso.','Balancear la pierna con impulso.'],
+ fac:'Menos recorrido o una banda más ligera.',dif:'Pausa de 2 segundos arriba o una banda más fuerte.',t:'r',s:3,v:12,u:'reps por lado'},
+/* ---------- ESPALDA ---------- */
+{id:'remo-sentado',n:'Remo sentado con banda',g:'espalda',sec:['brazos','hombros'],b:['asas','power'],
+ anc:'Pasa la banda por las plantas de los pies (piernas casi estiradas).',
+ ini:'Sentado en el suelo, rodillas ligeramente flexionadas, banda alrededor de las plantas de los pies, espalda alta y recta.',
+ pasos:['Tira de los extremos hacia el abdomen llevando los codos hacia atrás, pegados al cuerpo.','Junta los omóplatos al final del movimiento.','Vuelve despacio estirando los brazos sin encorvarte.'],
+ resp:'Exhala al tirar, inhala al volver.',
+ err:['Encorvar la espalda al volver.','Subir los hombros hacia las orejas.'],
+ fac:'Banda más ligera o rodillas más flexionadas.',dif:'Pausa de 2 segundos con los omóplatos juntos o una banda más fuerte.',t:'r',s:3,v:12},
+{id:'remo-inclinado',n:'Remo inclinado con banda pisada',g:'espalda',sec:['brazos','glúteos'],b:['asas','power'],
+ anc:'Pisa la banda con los dos pies.',
+ ini:'De pie sobre la banda, inclina el torso hacia delante desde la cadera (unos 45°) con la espalda recta y los brazos estirados.',
+ pasos:['Tira de los codos hacia atrás y arriba, hacia las costillas.','Aprieta los omóplatos.','Baja controlando la banda.'],
+ resp:'Exhala al tirar, inhala al bajar.',
+ err:['Redondear la espalda.','Levantar el torso para ayudarte.'],
+ fac:'Remo sentado, o apoya una mano en el muslo.',dif:'Una banda más fuerte o pausa de 2 segundos arriba.',t:'r',s:3,v:12},
+{id:'jalon-puerta',n:'Jalón con banda anclada arriba',g:'espalda',sec:['brazos','hombros'],b:['asas','power'],
+ anc:puerta('en lo alto'),
+ ini:'De rodillas o de pie frente a la puerta, brazos estirados hacia arriba y algo por delante, agarrando la banda.',
+ pasos:['Baja las manos hacia el pecho llevando los codos hacia las costillas.','Junta los omóplatos hacia abajo, pecho abierto.','Sube despacio controlando la banda.'],
+ resp:'Exhala al bajar, inhala al subir.',
+ err:['Echarte hacia atrás para ayudarte.','Encoger los hombros.'],
+ fac:'Banda más ligera o menos recorrido.',dif:'Pausa de 2 segundos abajo o una banda más fuerte.',t:'r',s:3,v:12},
+{id:'face-pull',n:'Face pull con banda anclada',g:'espalda',sec:['hombros'],b:['asas','power'],
+ anc:puerta('a la altura del pecho'),
+ ini:'De pie a un paso de la puerta, brazos estirados al frente agarrando la banda, con algo de tensión.',
+ pasos:['Tira hacia la cara abriendo los codos hacia los lados, a la altura de los hombros.','Junta los omóplatos y gira ligeramente los antebrazos hacia atrás.','Vuelve despacio.'],
+ resp:'Exhala al tirar.',
+ err:['Usar demasiada resistencia e inclinarte hacia atrás.','Codos por debajo de las manos.'],
+ fac:'Banda ligera y codos más bajos.',dif:'Pausa de 2 segundos con las manos junto a la cara.',t:'r',s:3,v:15},
+{id:'pull-apart',n:'Separación de banda',g:'espalda',sec:['hombros'],b:['asas','power'],
+ anc:'Sin anclaje: sostén la banda con las dos manos.',
+ ini:'De pie, brazos estirados al frente a la altura del pecho, manos al ancho de los hombros y la banda con algo de tensión.',
+ pasos:['Separa las manos hacia los lados con los brazos rectos.','Junta los omóplatos al final.','Vuelve despacio sin perder la tensión.'],
+ resp:'Exhala al separar.',
+ err:['Encoger los hombros.','Arquear la zona lumbar.'],
+ fac:'Agarre más ancho (menos tensión).',dif:'Agarre más estrecho o una banda más fuerte.',t:'r',s:3,v:15},
+/* ---------- PECHO ---------- */
+{id:'press-pecho',n:'Press de pecho con banda',g:'pecho',sec:['hombros','brazos'],b:['asas','power'],
+ anc:'Pasa la banda por detrás de la espalda, a la altura de los omóplatos, y agarra los extremos. Que quede plana, no enrollada.',
+ ini:'De pie con un pie adelantado, banda por la espalda, manos a la altura del pecho y codos hacia atrás.',
+ pasos:['Empuja las manos hacia delante hasta estirar los brazos.','Mantén el torso firme, sin inclinarte.','Vuelve despacio.'],
+ resp:'Exhala al empujar.',
+ err:['Dejar que la banda suba hacia el cuello.','Encoger los hombros.'],
+ fac:'Banda más ligera o menos recorrido.',dif:'Banda más fuerte o hacerlo con un brazo cada vez.',t:'r',s:3,v:12},
+{id:'aperturas-pecho',n:'Aperturas de pecho con banda',g:'pecho',sec:['hombros'],b:['asas','power'],
+ anc:'Pasa la banda por detrás de la espalda, a la altura de los omóplatos, como en el press.',
+ ini:'De pie, brazos abiertos a los lados y ligeramente por delante, codos algo flexionados.',
+ pasos:['Junta las manos frente al pecho describiendo un arco amplio.','Mantén el codo ligeramente flexionado todo el rato.','Abre despacio hasta notar un estiramiento suave.'],
+ resp:'Exhala al juntar las manos.',
+ err:['Doblar y estirar el codo (se convierte en un press).','Dejar que la banda te lance los brazos hacia atrás.'],
+ fac:'Banda más ligera.',dif:'Pausa al juntar las manos o una banda más fuerte.',t:'r',s:3,v:12},
+{id:'flexiones-banda',n:'Flexiones con banda',g:'pecho',sec:['brazos','hombros','core'],b:['power'],
+ anc:'Pasa la banda por detrás de la espalda y apoya los extremos bajo las palmas de las manos.',
+ ini:'Plancha alta con la banda cruzada por la espalda y los extremos bajo las palmas. Cuerpo en línea recta.',
+ pasos:['Baja el pecho hacia el suelo con los codos a unos 45° del torso.','Mantén una línea recta de cabeza a talones.','Empuja el suelo hasta estirar los brazos; la banda añade resistencia arriba.'],
+ resp:'Inhala al bajar, exhala al subir.',
+ err:['Cadera caída o demasiado alta.','Codos muy abiertos.'],
+ fac:'Sin banda, apoyando las rodillas o las manos en una mesa firme.',dif:'Una banda más fuerte o los pies elevados.',t:'r',s:3,v:8},
+/* ---------- HOMBROS ---------- */
+{id:'press-hombro',n:'Press de hombros con banda pisada',g:'hombros',sec:['brazos','core'],b:['asas','power'],
+ anc:'Pisa la banda con los dos pies; los extremos a la altura de los hombros.',
+ ini:'De pie sobre la banda, manos junto a los hombros con las palmas hacia delante.',
+ pasos:['Sube las manos por encima de la cabeza hasta estirar los brazos.','Costillas abajo y glúteos apretados: no arquees la espalda.','Baja despacio hasta los hombros.'],
+ resp:'Exhala al empujar.',
+ err:['Arquear la zona lumbar.','Adelantar la cabeza.'],
+ fac:'Banda más ligera o un brazo cada vez.',dif:'Una banda más fuerte o un brazo con pausa arriba.',t:'r',s:3,v:10},
+{id:'elevacion-lateral',n:'Elevación lateral con banda',g:'hombros',sec:[],b:['asas','power'],
+ anc:'Pisa la banda; las manos a los lados de los muslos.',
+ ini:'De pie sobre la banda, brazos junto al cuerpo y codos ligeramente flexionados.',
+ pasos:['Sube los brazos hacia los lados hasta la altura de los hombros.','Lleva con los codos, no con las manos.','Baja despacio sin balancear el tronco.'],
+ resp:'Exhala al subir.',
+ err:['Subir por encima de los hombros encogiéndolos.','Usar impulso del torso.'],
+ fac:'Banda más ligera o menos recorrido.',dif:'Pausa de 2 segundos arriba.',t:'r',s:3,v:12},
+{id:'elevacion-frontal',n:'Elevación frontal con banda',g:'hombros',sec:['pecho'],b:['asas','power'],
+ anc:'Pisa la banda; las manos por delante de los muslos.',
+ ini:'De pie sobre la banda, manos por delante de los muslos, palmas hacia atrás.',
+ pasos:['Sube los brazos al frente hasta la altura de los ojos, con los codos casi rectos.','Mantén el torso quieto.','Baja controlando.'],
+ resp:'Exhala al subir.',
+ err:['Balancear el cuerpo.','Elevar los hombros.'],
+ fac:'Banda ligera y un brazo cada vez.',dif:'Una banda más fuerte o pausa arriba.',t:'r',s:3,v:10},
+{id:'rotacion-externa',n:'Rotación externa de hombro',g:'hombros',sec:['espalda'],b:['asas','power'],
+ anc:puerta('a la altura del codo')+' Colócate de lado, con el anclaje en el lado contrario al brazo que trabaja.',
+ ini:'De pie de lado a la puerta, codo pegado al costado y doblado a 90°, antebrazo hacia delante agarrando la banda.',
+ pasos:['Con el codo pegado al costado, gira el antebrazo hacia fuera, alejándote del anclaje.','Mueve solo el hombro: el codo no se despega (puedes poner una toalla enrollada entre codo y costado).','Vuelve despacio a la posición inicial.'],
+ resp:'Respira con normalidad.',
+ err:['Separar el codo del costado.','Girar el tronco para ayudarte.'],
+ fac:'Una banda muy ligera.',dif:'Una banda algo más fuerte con pausa de 2 segundos afuera.',t:'r',s:3,v:12,u:'reps por lado'},
+/* ---------- BRAZOS ---------- */
+{id:'curl-biceps',n:'Curl de bíceps con banda',g:'brazos',sec:[],b:['asas','power'],
+ anc:'Pisa la banda con los dos pies; agarra los extremos con las palmas hacia delante.',
+ ini:'De pie sobre la banda, codos pegados al cuerpo y brazos estirados.',
+ pasos:['Flexiona los codos llevando las manos hacia los hombros.','Solo se mueve el antebrazo; los codos no se adelantan.','Baja despacio hasta casi estirar el brazo.'],
+ resp:'Exhala al subir.',
+ err:['Balancear el cuerpo.','Adelantar los codos.'],
+ fac:'Banda más ligera o un brazo cada vez.',dif:'Bajada de 3 segundos o una banda más fuerte.',t:'r',s:3,v:12},
+{id:'curl-martillo',n:'Curl martillo con banda',g:'brazos',sec:[],b:['asas','power'],
+ anc:'Pisa la banda con los dos pies; agarra los extremos con las palmas enfrentadas.',
+ ini:'De pie sobre la banda, palmas mirándose (como si sujetaras un martillo), codos pegados al cuerpo.',
+ pasos:['Flexiona los codos llevando los puños hacia los hombros.','Mantén las palmas enfrentadas todo el recorrido.','Baja despacio.'],
+ resp:'Exhala al subir.',
+ err:['Girar la muñeca durante el movimiento.','Balancear el torso.'],
+ fac:'Banda más ligera.',dif:'Bajada de 3 segundos o una banda más fuerte.',t:'r',s:3,v:12},
+{id:'extension-triceps-cabeza',n:'Extensión de tríceps sobre la cabeza',g:'brazos',sec:['hombros'],b:['asas','power'],
+ anc:'Pisa un extremo de la banda con el pie de atrás y agarra el otro extremo con las dos manos.',
+ ini:'De pie con un pie adelantado, banda pisada por el pie de atrás, manos detrás de la cabeza y codos apuntando al techo.',
+ pasos:['Estira los codos llevando las manos hacia el techo.','Mantén los codos cerca de las orejas.','Baja despacio; solo se mueven los antebrazos.'],
+ resp:'Exhala al estirar.',
+ err:['Abrir los codos hacia los lados.','Arquear la espalda.'],
+ fac:'Banda más ligera.',dif:'Una banda más fuerte o un brazo cada vez.',t:'r',s:3,v:12},
+{id:'empuje-triceps',n:'Empuje de tríceps con banda anclada arriba',g:'brazos',sec:[],b:['asas','power'],
+ anc:puerta('en lo alto'),
+ ini:'De pie frente a la puerta, codos pegados a las costillas y antebrazos hacia arriba agarrando la banda.',
+ pasos:['Empuja las manos hacia abajo hasta estirar los codos.','Los codos no se mueven de las costillas.','Sube despacio hasta unos 90° de codo.'],
+ resp:'Exhala al empujar.',
+ err:['Mover los hombros o inclinarte sobre la banda.','Adelantar los codos.'],
+ fac:'Banda más ligera.',dif:'Banda más fuerte, pausa abajo o un brazo cada vez.',t:'r',s:3,v:12},
+/* ---------- CORE ---------- */
+{id:'pallof-press',n:'Pallof press',g:'core',sec:['hombros'],b:['asas','power'],
+ anc:puerta('a la altura del pecho')+' Colócate de lado a la puerta.',
+ ini:'De pie de lado al anclaje, pies al ancho de los hombros, banda agarrada con las dos manos frente al pecho.',
+ pasos:['Estira los brazos al frente resistiendo que la banda te gire.','Mantén hombros y cadera mirando al frente durante 1 o 2 segundos.','Vuelve las manos al pecho con control.'],
+ resp:'Exhala al estirar; no aguantes la respiración.',
+ err:['Dejar que el tronco gire hacia el anclaje.','Encoger los hombros.'],
+ fac:'Banda más ligera o acércate al anclaje (menos tensión).',dif:'Aléjate del anclaje o mantén 3 segundos con los brazos estirados.',t:'r',s:3,v:10,u:'reps por lado'},
+{id:'lenador',n:'Leñador con banda',g:'core',sec:['hombros','glúteos'],b:['asas','power'],
+ anc:puerta('en lo alto')+' Colócate de lado a la puerta.',
+ ini:'De pie de lado al anclaje, pies al ancho de los hombros, manos juntas agarrando la banda arriba, a un lado de la cabeza.',
+ pasos:['Baja las manos en diagonal hacia la cadera contraria, girando tronco y pies como una unidad.','Los brazos casi estirados: el giro sale del tronco.','Vuelve despacio a la posición inicial.'],
+ resp:'Exhala al bajar.',
+ err:['Mover solo los brazos.','Forzar el giro con la espalda baja.'],
+ fac:'Banda ligera y menos recorrido.',dif:'Una banda más fuerte.',t:'r',s:3,v:10,u:'reps por lado'},
+{id:'plancha-abduccion',n:'Plancha con separación de pierna',g:'core',sec:['glúteos','hombros'],b:['mini'],
+ anc:'Sin anclaje: la mini band va sobre los tobillos.',
+ ini:'Plancha sobre los antebrazos, cuerpo en línea recta de cabeza a talones, mini band en los tobillos.',
+ pasos:['Sin girar la cadera, separa una pierna hacia el lado.','Vuelve al centro con control.','Alterna las piernas manteniendo la postura.'],
+ resp:'Respira con normalidad, sin aguantar el aire.',
+ err:['Cadera caída o demasiado alta.','Girar la pelvis al abrir la pierna.'],
+ fac:'Plancha sobre las rodillas o sin banda.',dif:'Una banda más fuerte.',t:'r',s:3,v:8,u:'reps por lado'},
+{id:'crunch-rodillas',n:'Crunch de rodillas con banda',g:'core',sec:[],b:['asas','power'],
+ anc:puerta('en lo alto'),
+ ini:'De rodillas frente a la puerta, manos junto a la cabeza sujetando la banda, espalda recta.',
+ pasos:['Flexiona el tronco llevando los codos hacia las rodillas, enrollando la espalda con el abdomen.','La cadera queda fija: no te sientes sobre los talones.','Sube despacio.'],
+ resp:'Exhala al flexionar.',
+ err:['Tirar con los brazos en vez del abdomen.','Mover la cadera hacia atrás.'],
+ fac:'Banda más ligera o crunch en el suelo sin banda.',dif:'Una banda más fuerte o pausa de 2 segundos abajo.',t:'r',s:3,v:12},
+/* ---------- CALENTAMIENTO Y VUELTA A LA CALMA ---------- */
+{id:'cal-marcha',n:'Marcha en el sitio',g:'movilidad',c:'cal',sec:[],b:[],anc:'Sin banda.',
+ ini:'De pie, postura relajada.',pasos:['Marcha en el sitio subiendo las rodillas con suavidad.','Balancea los brazos.','Sube el ritmo poco a poco.'],
+ resp:'Respira con normalidad.',err:['Empezar demasiado rápido.'],fac:'Marcha lenta.',dif:'Rodillas más altas.',t:'s',s:1,v:40},
+{id:'cal-brazos',n:'Círculos de brazos',g:'movilidad',c:'cal',sec:[],b:[],anc:'Sin banda.',
+ ini:'De pie, brazos abiertos a los lados.',pasos:['Haz círculos pequeños y ve agrandándolos.','A mitad de tiempo, cambia el sentido.'],
+ resp:'Respira con normalidad.',err:['Encoger los hombros.'],fac:'Círculos más pequeños.',dif:'Círculos más grandes.',t:'s',s:1,v:30},
+{id:'cal-cadera',n:'Círculos de cadera',g:'movilidad',c:'cal',sec:[],b:[],anc:'Sin banda.',
+ ini:'De pie, manos en las caderas, pies al ancho de los hombros.',pasos:['Dibuja círculos amplios con la cadera.','A mitad de tiempo, cambia el sentido.'],
+ resp:'Respira con normalidad.',err:['Mover solo la parte alta del cuerpo.'],fac:'Círculos más pequeños.',dif:'Círculos más grandes.',t:'s',s:1,v:30},
+{id:'vu-cuadriceps',n:'Estiramiento de cuádriceps',g:'movilidad',c:'vuelta',sec:[],b:[],anc:'Sin banda. Apoya una mano en la pared.',
+ ini:'De pie, apoyado en una pared.',pasos:['Dobla una rodilla y sujeta el pie por detrás.','Rodillas juntas, cadera al frente.','A mitad de tiempo, cambia de pierna.'],
+ resp:'Respira lento y profundo.',err:['Arquear la espalda.'],fac:'Con una banda o toalla para llegar al pie.',dif:'Empuja la cadera un poco más al frente.',t:'s',s:1,v:40,u:'seg (20 por lado)'},
+{id:'vu-nino',n:'Postura del niño',g:'movilidad',c:'vuelta',sec:[],b:[],anc:'Sin banda.',
+ ini:'De rodillas en el suelo.',pasos:['Siéntate sobre los talones y estira los brazos al frente.','Deja caer el pecho hacia el suelo.','Respira despacio y suelta la tensión.'],
+ resp:'Respira lento y profundo.',err:['Forzar si notas dolor en las rodillas.'],fac:'Coloca un cojín bajo los glúteos o las rodillas.',dif:'Estira más los brazos.',t:'s',s:1,v:40},
+{id:'vu-pecho',n:'Estiramiento de pecho en la puerta',g:'movilidad',c:'vuelta',sec:[],b:[],anc:'Sin banda. Usa el marco de una puerta.',
+ ini:'De pie en el marco de una puerta, antebrazo apoyado en el marco con el codo a 90°.',pasos:['Da un paso al frente hasta notar un estiramiento suave en el pecho.','Mantén el pecho abierto y el hombro relajado.'],
+ resp:'Respira lento y profundo.',err:['Forzar hasta sentir dolor en el hombro.'],fac:'Codo más bajo.',dif:'Codo más alto.',t:'s',s:1,v:40,u:'seg (20 por lado)'}
+];
+const EJMAP=Object.fromEntries(EJ.map(e=>[e.id,e]));
+
+const uni=e=>e.u||(e.t==='s'?'seg':'reps');
+const porLado=e=>/lado/.test(e.u||'');
+const catE=e=>e.c||'f';
+const catTxt=e=>e.c==='cal'?'Calentamiento':e.c==='vuelta'?'Vuelta a la calma':'Fuerza';
+const segTrabajo=(e,it)=>e.t==='s'?it.v:Math.max(8,Math.round(it.v*3*(porLado(e)?2:1)));
+
+/* =====================================================================
+   Datos: rutinas de ejemplo y estado
+   ===================================================================== */
+const NIVEL={principiante:{s:2,d:60,t:'Principiante',x:'2 series y 60 s de descanso'},intermedio:{s:3,d:45,t:'Intermedio',x:'3 series y 45 s de descanso'},avanzado:{s:4,d:40,t:'Avanzado',x:'4 series y 40 s de descanso'}};
+
+function rutinasEjemplo(nivel,dias){
+  const n=NIVEL[nivel]||NIVEL.principiante;
+  const cal=id=>({ej:id,s:1,v:EJMAP[id].v,d:10});
+  const F=(id,v)=>({ej:id,s:n.s,v:v==null?EJMAP[id].v:v,d:n.d});
+  const R=[
+    {id:uid('r'),nombre:'Full body',desc:'Todo el cuerpo en una sesión: piernas, espalda, pecho, hombros y core.',dias:[],
+     items:[cal('cal-marcha'),cal('cal-brazos'),F('sentadilla-pisada'),F('remo-sentado'),F('press-pecho'),F('puente-gluteo-mini'),F('press-hombro'),F('pallof-press'),cal('vu-cuadriceps'),cal('vu-nino')]},
+    {id:uid('r'),nombre:'Glúteos y piernas',desc:'Glúteos, cuádriceps e isquios, con trabajo de glúteo medio.',dias:[],
+     items:[cal('cal-marcha'),cal('cal-cadera'),F('sentadilla-mini'),F('puente-gluteo-mini'),F('peso-muerto-rumano'),F('zancada-atras'),F('caminata-lateral'),F('almeja'),F('elevacion-talones'),cal('vu-cuadriceps'),cal('vu-nino')]},
+    {id:uid('r'),nombre:'Tren superior',desc:'Espalda, pecho, hombros y brazos.',dias:[],
+     items:[cal('cal-brazos'),cal('cal-marcha'),F('press-pecho'),F('remo-inclinado'),F('press-hombro'),F('jalon-puerta'),F('curl-biceps'),F('extension-triceps-cabeza'),F('face-pull',15),cal('vu-pecho'),cal('vu-nino')]},
+    {id:uid('r'),nombre:'Core',desc:'Estabilidad y fuerza del tronco, sin impacto. Sirve como sesión extra.',dias:[],
+     items:[cal('cal-marcha'),cal('cal-cadera'),F('pallof-press'),F('lenador'),F('crunch-rodillas'),F('plancha-abduccion'),F('patada-gluteo'),cal('vu-nino')]}
+  ];
+  (dias||[]).slice().sort().forEach((d,k)=>{ if(R[k]) R[k].dias=[d]; });
+  return R;
+}
+function defaults(){
+  const aj={bandas:[],nivel:'principiante',dias:[0,2,4],duracion:30,sonido:true,vibracion:true,tema:'oscuro',soloMisBandas:true};
+  return {v:1,ajustes:aj,rutinas:rutinasEjemplo(aj.nivel,aj.dias),libre:{},sesiones:[]};
+}
+function migrate(o){
+  const d=defaults();
+  if(!o||typeof o!=='object') return d;
+  const s={v:1};
+  s.ajustes=Object.assign({},d.ajustes,o.ajustes||{});
+  if(!Array.isArray(s.ajustes.bandas)) s.ajustes.bandas=[];
+  if(!Array.isArray(s.ajustes.dias)) s.ajustes.dias=d.ajustes.dias;
+  s.rutinas=(Array.isArray(o.rutinas)?o.rutinas:d.rutinas).map(r=>({
+    id:r.id||uid('r'),nombre:String(r.nombre||'Rutina'),desc:String(r.desc||''),
+    dias:Array.isArray(r.dias)?r.dias.filter(x=>x>=0&&x<=6):[],
+    items:(Array.isArray(r.items)?r.items:[]).filter(it=>EJMAP[it.ej]).map(it=>({ej:it.ej,s:clamp(+it.s||1,1,12),v:clamp(+it.v||1,1,600),d:clamp(+it.d||0,0,300)}))
+  }));
+  s.libre=(o.libre&&typeof o.libre==='object')?o.libre:{};
+  s.sesiones=Array.isArray(o.sesiones)?o.sesiones:[];
+  return s;
+}
+const KEY='bandas-en-casa:v1';
+let memoria=null;
+function load(){
+  try{ const raw=localStorage.getItem(KEY); if(raw) return migrate(JSON.parse(raw)); }catch(e){ console.warn('No se pudo leer',e); }
+  return memoria?migrate(memoria):defaults();
+}
+function save(){
+  try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){ memoria=S; }
+}
+let S=load();
+
+/* ---- Cálculos sobre rutinas ---- */
+function estMin(r){
+  let t=0;
+  r.items.forEach((it,k)=>{
+    const e=EJMAP[it.ej]; if(!e) return;
+    t+=it.s*segTrabajo(e,it)+(it.s-(k===r.items.length-1?1:0))*it.d+8;
+  });
+  return Math.max(1,Math.round(t/60));
+}
+function tiposMios(){ return new Set(S.ajustes.bandas.map(b=>b.tipo)); }
+function ejPosible(e){
+  if(!S.ajustes.bandas.length||!e.b.length) return true;
+  const m=tiposMios(); return e.b.some(b=>m.has(b));
+}
+function faltan(r){
+  if(!S.ajustes.bandas.length) return [];
+  const f=new Set();
+  r.items.forEach(it=>{const e=EJMAP[it.ej]; if(e&&!ejPosible(e)) f.add(e.b.map(b=>TIPOS_C[b]).join(' o '));});
+  return [...f];
+}
+
+/* =====================================================================
+   Estado de interfaz
+   ===================================================================== */
+const UI={vista:'hoy',lib:{q:'',g:'todos',b:'todas'},sheets:[],draft:null,pk:{q:'',g:'todos',n:0},cf:null};
+let T=null;   // sesión de entrenamiento en curso
+
+function toast(msg){
+  const t=$('#toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(toast.h); toast.h=setTimeout(()=>t.classList.remove('show'),2200);
+}
+function aplicarTema(){ document.documentElement.setAttribute('data-tema',S.ajustes.tema||'oscuro'); }
+const misOn=()=>!!S.ajustes.soloMisBandas;
+
+/* =====================================================================
+   Vistas
+   ===================================================================== */
+function semanaHTML(){
+  const hoy=new Date(), di=diaIdx(hoy);
+  const lunes=new Date(hoy); lunes.setDate(hoy.getDate()-di);
+  let h='<div class="semana" role="group" aria-label="Semana">';
+  for(let i=0;i<7;i++){
+    const d=new Date(lunes); d.setDate(lunes.getDate()+i);
+    const f=isoDate(d);
+    const rs=S.rutinas.filter(r=>r.dias.includes(i));
+    const hechas=S.sesiones.filter(s=>s.fecha===f).length;
+    let pts='';
+    if(hechas) pts+='<i class="pt ok"></i>';
+    else if(S.libre[f]) pts+='<i class="pt lib"></i>';
+    else if(rs.length) pts+=rs.slice(0,3).map(()=>'<i class="pt"></i>').join('');
+    else pts+='<i class="pt off"></i>';
+    h+=`<button class="dia${i===di?' hoy':''}" data-act="dia" data-i="${i}" aria-label="${cap(DIAS_L[i])} ${d.getDate()}"><span class="dl">${DIAS[i]}</span><span class="dn">${d.getDate()}</span><span class="pts">${pts}</span></button>`;
+  }
+  return h+'</div>';
+}
+function rutinaFila(r,cta){
+  const n=r.items.filter(it=>EJMAP[it.ej]&&catE(EJMAP[it.ej])==='f').length;
+  return `<div class="card rut"><div class="row sp"><div class="grow"><h3>${esc(r.nombre)}</h3><p class="meta">${n} ejercicios de fuerza, unos ${estMin(r)} min</p></div><button class="btn primary" data-act="empezar" data-id="${r.id}">${cta||'Empezar'}</button></div></div>`;
+}
+function vistaHoy(){
+  const hoy=new Date(), f=isoDate(hoy), di=diaIdx(hoy);
+  const asign=S.rutinas.filter(r=>r.dias.includes(di));
+  const hechas=S.sesiones.filter(s=>s.fecha===f);
+  const libre=S.libre[f];
+  let h=`<p class="fecha">${cap(hoy.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long'}))}</p>`+semanaHTML();
+
+  if(hechas.length){
+    h+=`<div class="card"><h3>Sesión hecha hoy</h3>`+hechas.map(s=>`<p class="hint" style="margin:6px 0 0">${esc(s.rutina)}, ${Math.max(1,Math.round(s.seg/60))} min, ${s.series} series</p>`).join('')+`</div>`;
+  }
+  if(libre){
+    h+=`<div class="card"><h3>Hoy: ${esc(libre)}</h3><p class="hint">Día libre anotado. Descansar también forma parte del plan.</p><button class="btn ghost sm" data-act="librex">Quitar y volver a entrenar</button></div>`;
+  }else if(asign.length){
+    h+=asign.map(r=>{
+      const falt=faltan(r);
+      return rutinaFila(r,hechas.some(s=>s.rutinaId===r.id)?'Repetir':'Empezar')+(falt.length?`<div class="warn">Te falta banda para esta rutina: ${esc(falt.join('; '))}.</div>`:'');
+    }).join('');
+    h+=`<div class="card"><h3>¿Hoy no te encaja?</h3><p class="hint">Marca el día como libre y sigue mañana.</p>${libreBotones()}</div>`;
+  }else{
+    h+=`<div class="card"><h3>Hoy no hay rutina</h3><p class="hint">Descansa, sal a correr o haz algo de movilidad. Anótalo si quieres.</p>${libreBotones()}</div>`;
+  }
+  h+=`<div class="card"><h3>Entrenar otra rutina</h3><p class="hint">Cualquier rutina se puede hacer en cualquier día.</p>`+
+     S.rutinas.map(r=>`<div class="row sp" style="margin:8px 0"><div class="grow"><b>${esc(r.nombre)}</b><br><small>${estMin(r)} min</small></div><button class="btn sm" data-act="empezar" data-id="${r.id}">Empezar</button></div>`).join('')+`</div>`;
+  return h;
+}
+function libreBotones(){
+  return '<div class="chips">'+['Descanso','Correr','Yoga','Movilidad','Otra actividad'].map(a=>`<button class="chip" data-act="libre" data-v="${a}">${a}</button>`).join('')+'</div>';
+}
+
+function vistaRutinas(){
+  let h=`<p class="hint">Plantillas semanales. Toca los días para moverlas.</p><button class="btn primary block" data-act="nueva">Nueva rutina</button>`;
+  if(!S.rutinas.length) h+='<p class="empty">Aún no tienes rutinas. Crea una o añade las de ejemplo desde Ajustes.</p>';
+  h+=S.rutinas.map(r=>{
+    const n=r.items.filter(it=>EJMAP[it.ej]&&catE(EJMAP[it.ej])==='f').length, m=estMin(r), falt=faltan(r);
+    return `<article class="card rut">
+      <h3>${esc(r.nombre)}</h3>
+      ${r.desc?`<p class="desc">${esc(r.desc)}</p>`:''}
+      <p class="meta">${n} ejercicios de fuerza, unos ${m} min</p>
+      ${m>S.ajustes.duracion+5?`<div class="warn">Dura más de tus ${S.ajustes.duracion} min disponibles. Puedes quitar ejercicios o series al editarla.</div>`:''}
+      ${falt.length?`<div class="warn">Te falta banda: ${esc(falt.join('; '))}.</div>`:''}
+      <div class="dias" role="group" aria-label="Días de la rutina">${DIAS.map((d,i)=>`<button class="chip${r.dias.includes(i)?' on':''}" data-act="rdia" data-id="${r.id}" data-i="${i}" aria-pressed="${r.dias.includes(i)}" aria-label="${cap(DIAS_L[i])}">${d}</button>`).join('')}</div>
+      <div class="acciones">
+        <button class="btn primary" data-act="empezar" data-id="${r.id}">Empezar</button>
+        <button class="btn sm" data-act="editar" data-id="${r.id}">Editar</button>
+        <button class="btn sm" data-act="dup" data-id="${r.id}">Duplicar</button>
+        <button class="btn sm danger" data-act="borrar" data-id="${r.id}" aria-label="Eliminar rutina">Borrar</button>
+      </div></article>`;
+  }).join('');
+  return h;
+}
+
+function filtrar(q,g,b,mis){
+  return EJ.filter(e=>{
+    if(g!=='todos'&&e.g!==g) return false;
+    if(b!=='todas'&&!e.b.includes(b)) return false;
+    if(mis&&!ejPosible(e)) return false;
+    if(q){ const t=norm(e.n+' '+e.g+' '+e.sec.join(' ')); if(!t.includes(norm(q))) return false; }
+    return true;
+  });
+}
+function chipsGrupo(sel,act){
+  return ['todos',...GRUPOS].map(g=>`<button class="chip${sel===g?' on':''}" data-act="${act}" data-v="${g}">${cap(g)}</button>`).join('');
+}
+function listaEj(arr,pick){
+  if(!arr.length) return '<p class="empty">Ningún ejercicio coincide. Prueba a quitar filtros o el filtro de «solo mis bandas».</p>';
+  return arr.map(e=>{
+    const tags=e.b.map(b=>`<span class="tag">${TIPOS_C[b]}</span>`).join('');
+    const meta=cap(e.g)+(e.sec.length?', también '+e.sec.join(', '):'');
+    if(pick) return `<div class="ex pick"><button class="grow" style="text-align:left" data-act="ficha" data-id="${e.id}"><div class="n">${esc(e.n)}</div><div class="m">${esc(meta)}</div><div class="tags">${tags}</div></button><button class="btn sm primary" data-act="pk-add" data-id="${e.id}">Añadir</button></div>`;
+    return `<button class="ex" data-act="ficha" data-id="${e.id}"><div class="n">${esc(e.n)}</div><div class="m">${esc(meta)}</div><div class="tags">${tags}</div></button>`;
+  }).join('');
+}
+function vistaEjercicios(){
+  const L=UI.lib, mis=misOn();
+  const arr=filtrar(L.q,L.g,L.b,mis);
+  return `<div class="filtros">
+    <input type="search" id="lib-q" data-bind="libq" placeholder="Buscar ejercicio" value="${esc(L.q)}" aria-label="Buscar ejercicio">
+    <div class="chips scroll" style="margin-top:8px">${chipsGrupo(L.g,'lib-g')}</div>
+    <div class="chips scroll"><button class="chip${L.b==='todas'?' on':''}" data-act="lib-b" data-v="todas">Todas las bandas</button>${Object.keys(TIPOS).map(b=>`<button class="chip${L.b===b?' on':''}" data-act="lib-b" data-v="${b}">${TIPOS_C[b]}</button>`).join('')}</div>
+    ${S.ajustes.bandas.length?`<label class="sw"><span>Solo con mis bandas</span><input type="checkbox" data-bind="libmis" ${mis?'checked':''}></label>`:''}
+  </div><p class="hint" id="lib-n">${arr.length} ejercicios</p><div id="lib-list">${listaEj(arr)}</div>`;
+}
+function refrescaLib(){
+  const L=UI.lib, arr=filtrar(L.q,L.g,L.b,misOn());
+  const l=$('#lib-list'); if(l) l.innerHTML=listaEj(arr);
+  const n=$('#lib-n'); if(n) n.textContent=arr.length+' ejercicios';
+}
+
+function vistaAjustes(){
+  const a=S.ajustes;
+  const bandas=a.bandas.map(b=>`<div class="banda">
+      <span class="dot" style="background:${colorHex(b.color)}"></span>
+      <select data-bind="btipo" data-id="${b.id}" aria-label="Tipo de banda">${Object.keys(TIPOS).map(k=>`<option value="${k}"${b.tipo===k?' selected':''}>${TIPOS[k]}</option>`).join('')}</select>
+      <select data-bind="bcolor" data-id="${b.id}" aria-label="Color">${COLORES.map(c=>`<option value="${c[0]}"${b.color===c[0]?' selected':''}>${c[1]}</option>`).join('')}</select>
+      <button class="x" data-act="bdel" data-id="${b.id}" aria-label="Quitar banda">×</button>
+      <input class="nota" data-bind="bnota" data-id="${b.id}" placeholder="Etiqueta o kg (opcional)" value="${esc(b.nota||'')}" aria-label="Etiqueta">
+    </div>`).join('');
+  return `
+  <div class="card"><h3>Mis bandas</h3>
+    <p class="hint">Añade cada banda que tengas. Los colores cambian según la marca, así que usa la etiqueta si te ayuda.</p>
+    ${bandas||'<p class="empty" style="padding:10px 0">Aún no has añadido ninguna banda.</p>'}
+    <button class="btn block" data-act="badd">Añadir banda</button></div>
+  <div class="card"><h3>Nivel</h3>
+    <p class="hint">Define las series y descansos por defecto al añadir ejercicios y en las rutinas de ejemplo. No cambia las rutinas que ya tienes.</p>
+    <div class="stack">${Object.keys(NIVEL).map(k=>`<button class="chip${a.nivel===k?' on':''}" style="width:100%;justify-content:space-between" data-act="nivel" data-v="${k}"><span>${NIVEL[k].t}</span><small style="color:inherit;opacity:.8">${NIVEL[k].x}</small></button>`).join('')}</div></div>
+  <div class="card"><h3>Días disponibles</h3><p class="hint">Los días en que normalmente puedes entrenar.</p>
+    <div class="dias" style="margin-bottom:0">${DIAS.map((d,i)=>`<button class="chip${a.dias.includes(i)?' on':''}" data-act="adia" data-i="${i}" aria-pressed="${a.dias.includes(i)}" aria-label="${cap(DIAS_L[i])}">${d}</button>`).join('')}</div></div>
+  <div class="card"><h3>Duración por sesión</h3><p class="hint">Te aviso si una rutina se pasa de este tiempo.</p>
+    <div class="chips">${[15,20,30,45,60].map(m=>`<button class="chip${a.duracion===m?' on':''}" data-act="dur" data-v="${m}">${m} min</button>`).join('')}</div></div>
+  <div class="card"><h3>Avisos</h3>
+    <label class="sw"><span>Sonido</span><input type="checkbox" data-bind="sonido" ${a.sonido?'checked':''}></label>
+    <label class="sw"><span>Vibración</span><input type="checkbox" data-bind="vibracion" ${a.vibracion?'checked':''}></label>
+    <p class="hint">La vibración no funciona en iPhone (Safari no la permite); en Android sí.</p></div>
+  <div class="card"><h3>Apariencia</h3>
+    <div class="chips">${[['oscuro','Oscuro'],['claro','Claro'],['auto','Como el móvil']].map(t=>`<button class="chip${a.tema===t[0]?' on':''}" data-act="tema" data-v="${t[0]}">${t[1]}</button>`).join('')}</div></div>
+  <div class="card"><h3>Copia de seguridad</h3>
+    <p class="hint">Tus datos viven solo en este dispositivo. Exporta una copia de vez en cuando.</p>
+    <div class="row"><button class="btn grow" data-act="exportar">Exportar</button><button class="btn grow" data-act="importar">Importar</button></div></div>
+  <div class="card"><h3>Datos</h3>
+    <div class="stack"><button class="btn block" data-act="ejemplos">Añadir las rutinas de ejemplo</button><button class="btn block danger" data-act="reset">Borrar todos los datos</button></div></div>
+  <div class="card"><h3>Instalar en el móvil</h3>
+    <p class="hint" style="margin-bottom:0">Android (Chrome): menú ⋮, «Instalar aplicación». iPhone (Safari): botón Compartir, «Añadir a pantalla de inicio».</p></div>
+  <p class="foot">Bandas en casa, versión 1.0. Revisa siempre la banda antes de entrenar. Si notas dolor (no la molestia muscular normal), para. La app no diagnostica ni sustituye a un profesional de la salud.</p>`;
+}
+
+const VISTAS={hoy:vistaHoy,rutinas:vistaRutinas,ejercicios:vistaEjercicios,ajustes:vistaAjustes};
+const TITULOS={hoy:'Hoy',rutinas:'Rutinas',ejercicios:'Ejercicios',ajustes:'Ajustes'};
+function render(){
+  aplicarTema();
+  $('#title').textContent=TITULOS[UI.vista];
+  $('#view').innerHTML=VISTAS[UI.vista]();
+  document.querySelectorAll('#tabs button').forEach(b=>{const on=b.dataset.v===UI.vista;b.classList.toggle('on',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
+}
+
+/* =====================================================================
+   Hojas: ficha, editor, selector, confirmación, día
+   ===================================================================== */
+function fichaHTML(e){
+  const chips=[`<span class="tag">${cap(e.g)}</span>`].concat(e.sec.map(s=>`<span class="tag">${cap(s)}</span>`)).concat(e.b.map(b=>`<span class="tag">${TIPOS[b]}</span>`)).join('');
+  const sug=e.t==='s'?`${e.v} ${uni(e)}`:`${e.s} series de ${e.v} ${uni(e)}`;
+  return `<div class="backdrop" data-act="cerrar"></div>
+  <section class="sheet ficha" role="dialog" aria-modal="true" aria-label="${esc(e.n)}">
+    <header><h2>${esc(e.n)}</h2><button class="x" data-act="cerrar" aria-label="Cerrar">×</button></header>
+    <div class="sheet-body">
+      <div class="hd">${chips}</div>
+      <h4>Dónde se ancla</h4><p>${esc(e.anc)}</p>
+      <h4>Posición inicial</h4><p>${esc(e.ini)}</p>
+      <h4>Cómo se hace</h4><ol>${e.pasos.map(p=>`<li>${esc(p)}</li>`).join('')}</ol>
+      <h4>Respiración</h4><p>${esc(e.resp)}</p>
+      <h4>Errores comunes</h4><ul>${e.err.map(p=>`<li>${esc(p)}</li>`).join('')}</ul>
+      <h4>Variante más fácil</h4><p>${esc(e.fac)}</p>
+      <h4>Variante más difícil</h4><p>${esc(e.dif)}</p>
+      <h4>Sugerencia</h4><p>${esc(sug)}</p>
+      <div class="note pain">Si notas dolor (no la molestia muscular normal), para el ejercicio.</div>
+    </div></section>`;
+}
+function stp(label,i,f,v){
+  return `<div class="stpw"><small>${esc(label)}</small><div class="stp"><button data-act="ed-st" data-i="${i}" data-f="${f}" data-d="-1" aria-label="Menos ${esc(label)}">−</button><span>${v}</span><button data-act="ed-st" data-i="${i}" data-f="${f}" data-d="1" aria-label="Más ${esc(label)}">+</button></div></div>`;
+}
+function editorHTML(){
+  const d=UI.draft;
+  const items=d.items.map((it,i)=>{
+    const e=EJMAP[it.ej];
+    return `<div class="eit"><div class="row sp"><span class="eit-n">${esc(e.n)}</span><span class="tag">${catTxt(e)}</span></div>
+      <div class="eit-c">${stp('Series',i,'s',it.s)}${stp(cap(uni(e)),i,'v',it.v)}${stp('Descanso s',i,'d',it.d)}
+      <span class="eit-o"><button data-act="ed-up" data-i="${i}" aria-label="Subir">▲</button><button data-act="ed-down" data-i="${i}" aria-label="Bajar">▼</button><button data-act="ed-del" data-i="${i}" aria-label="Quitar ejercicio">✕</button></span></div></div>`;
+  }).join('');
+  return `<div class="backdrop" data-act="ed-cancel"></div>
+  <section class="sheet full" role="dialog" aria-modal="true" aria-label="Editar rutina">
+    <header><h2>${d.nuevo?'Nueva rutina':'Editar rutina'}</h2><button class="x" data-act="ed-cancel" aria-label="Cancelar">×</button></header>
+    <div class="sheet-body">
+      <div class="field"><label for="ed-n">Nombre</label><input id="ed-n" data-bind="ednombre" value="${esc(d.nombre)}" placeholder="Por ejemplo, Glúteos del martes"></div>
+      <div class="field"><label for="ed-d">Descripción (opcional)</label><input id="ed-d" data-bind="eddesc" value="${esc(d.desc)}"></div>
+      <div class="field"><label>Días</label><div class="dias" style="margin:0">${DIAS.map((x,i)=>`<button class="chip${d.dias.includes(i)?' on':''}" data-act="ed-dia" data-i="${i}" aria-pressed="${d.dias.includes(i)}" aria-label="${cap(DIAS_L[i])}">${x}</button>`).join('')}</div></div>
+      <h3 style="margin-top:16px">Ejercicios (${d.items.length})</h3>
+      <p class="hint">Calentamiento al principio, fuerza en medio y vuelta a la calma al final.</p>
+      ${items||'<p class="empty">Añade el primer ejercicio.</p>'}
+      <button class="btn block" data-act="pk-open">Añadir ejercicio</button>
+      <p class="hint" style="margin-top:12px">Unos ${estMin(d)} min en total.</p>
+    </div>
+    <div class="sheet-foot"><button class="btn ghost" data-act="ed-cancel">Cancelar</button><button class="btn primary" data-act="ed-guardar">Guardar rutina</button></div>
+  </section>`;
+}
+function pickerHTML(){
+  const P=UI.pk, mis=misOn();
+  const arr=filtrar(P.q,P.g,'todas',mis);
+  return `<div class="backdrop" data-act="cerrar"></div>
+  <section class="sheet full" role="dialog" aria-modal="true" aria-label="Añadir ejercicio">
+    <header><h2>Añadir ejercicio</h2><button class="x" data-act="cerrar" aria-label="Cerrar">×</button></header>
+    <div class="sheet-body">
+      <input type="search" data-bind="pkq" placeholder="Buscar ejercicio" value="${esc(P.q)}" aria-label="Buscar ejercicio">
+      <div class="chips scroll" style="margin-top:8px">${chipsGrupo(P.g,'pk-g')}</div>
+      ${S.ajustes.bandas.length?`<label class="sw"><span>Solo con mis bandas</span><input type="checkbox" data-bind="pkmis" ${mis?'checked':''}></label>`:''}
+      <div id="pk-list">${listaEj(arr,true)}</div>
+    </div>
+    <div class="sheet-foot"><button class="btn primary" data-act="cerrar">Listo${P.n?' ('+P.n+' añadidos)':''}</button></div>
+  </section>`;
+}
+function diaHTML(i){
+  return `<div class="backdrop" data-act="cerrar"></div>
+  <section class="sheet" role="dialog" aria-modal="true" aria-label="${cap(DIAS_L[i])}">
+    <header><h2>${cap(DIAS_L[i])}</h2><button class="x" data-act="cerrar" aria-label="Cerrar">×</button></header>
+    <div class="sheet-body"><p class="hint">Elige qué rutinas tocan este día.</p>
+    ${S.rutinas.map(r=>`<div class="row sp" style="margin:10px 0"><div class="grow"><b>${esc(r.nombre)}</b><br><small>${estMin(r)} min</small></div><button class="chip${r.dias.includes(i)?' on':''}" data-act="rdia" data-id="${r.id}" data-i="${i}" aria-pressed="${r.dias.includes(i)}">${r.dias.includes(i)?'Toca':'No toca'}</button></div>`).join('')||'<p class="empty">No hay rutinas todavía.</p>'}
+    </div></section>`;
+}
+function confirmHTML(c){
+  return `<div class="backdrop" data-act="cf" data-i="0"></div>
+  <section class="modal" role="alertdialog" aria-modal="true" aria-label="${esc(c.titulo)}">
+    <h2>${esc(c.titulo)}</h2><p style="margin:8px 0 16px;color:var(--mut)">${esc(c.texto)}</p>
+    <div class="stack">${c.botones.map((b,i)=>`<button class="btn block ${b.cls||''}" data-act="cf" data-i="${i}">${esc(b.t)}</button>`).join('')}</div>
+  </section>`;
+}
+function renderSheet(keep){
+  const box=$('#sheets'), top=UI.sheets[UI.sheets.length-1];
+  const old=box.querySelector('.sheet-body'), sc=old?old.scrollTop:0;
+  if(!top){ box.innerHTML=''; }
+  else if(top.t==='ficha') box.innerHTML=fichaHTML(EJMAP[top.id]);
+  else if(top.t==='editor') box.innerHTML=editorHTML();
+  else if(top.t==='picker') box.innerHTML=pickerHTML();
+  else if(top.t==='dia') box.innerHTML=diaHTML(top.i);
+  else if(top.t==='confirm') box.innerHTML=confirmHTML(UI.cf);
+  if(keep){ const nb=box.querySelector('.sheet-body'); if(nb) nb.scrollTop=sc; }
+  document.body.classList.toggle('noscroll',UI.sheets.length>0||!!T);
+}
+function openSheet(s){ UI.sheets.push(s); renderSheet(); }
+function closeSheet(){ UI.sheets.pop(); renderSheet(); }
+function confirmar(c){ UI.cf=c; openSheet({t:'confirm'}); }
+
+/* =====================================================================
+   Entrenamiento
+   ===================================================================== */
+let ac=null, wl=null;
+function unlockAudio(){ try{ ac=ac||new (window.AudioContext||window.webkitAudioContext)(); if(ac.state==='suspended') ac.resume(); }catch(e){} }
+function beep(freq,dur){
+  if(!S.ajustes.sonido) return;
+  try{
+    unlockAudio(); if(!ac) return;
+    const o=ac.createOscillator(), g=ac.createGain();
+    o.type='sine'; o.frequency.value=freq||880; g.gain.value=.22;
+    o.connect(g); g.connect(ac.destination);
+    const t=ac.currentTime; g.gain.setValueAtTime(.22,t); g.gain.exponentialRampToValueAtTime(.0001,t+(dur||.15));
+    o.start(t); o.stop(t+(dur||.15)+.02);
+  }catch(e){}
+}
+function vib(p){ if(S.ajustes.vibracion&&navigator.vibrate){ try{navigator.vibrate(p);}catch(e){} } }
+async function wake(){ try{ if('wakeLock' in navigator&&!wl){ wl=await navigator.wakeLock.request('screen'); wl.addEventListener('release',()=>{wl=null;}); } }catch(e){} }
+function unwake(){ try{ if(wl) wl.release(); }catch(e){} wl=null; }
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&T&&T.fase!=='fin') wake(); });
+
+const RING=2*Math.PI*88;
+function ringHTML(cls,mid){
+  return `<div class="ring ${cls}${T.pausa?' paused':''}" id="ring"><svg viewBox="0 0 200 200" aria-hidden="true"><circle class="track" cx="100" cy="100" r="88" fill="none" stroke-width="12"/><circle class="prog" id="ringp" cx="100" cy="100" r="88" fill="none" stroke-width="12" stroke-linecap="round" transform="rotate(-90 100 100)" stroke-dasharray="${RING.toFixed(2)}" stroke-dashoffset="0"/></svg><div class="mid">${mid}</div></div>`;
+}
+function barHTML(){ return '<div class="tr-bar" aria-hidden="true">'+T.items.map((_,k)=>`<i class="${k<T.i?'done':k===T.i?'cur':''}"></i>`).join('')+'</div>'; }
+function topHTML(sub){
+  return `<div class="tr-top"><button class="x" data-act="t-salir" aria-label="Salir del entrenamiento">×</button><div class="ttl"><b>${esc(T.r.nombre)}</b><span>${esc(sub)}</span></div>${T.fase==='trabajo'||T.fase==='descanso'?`<button class="btn sm" data-act="t-pausa">${T.pausa?'Seguir':'Pausa'}</button>`:''}</div>`;
+}
+function trainHTML(){
+  const it=T.items[T.i], e=it&&it.ej;
+  if(T.fase==='seguridad'){
+    return `<div class="tr">${topHTML('Antes de empezar')}<div class="safe">
+      <h2>Revisa antes de empezar</h2>
+      <p class="hint" style="margin-top:6px">${T.items.length} pasos, unos ${estMin(T.r)} min.</p>
+      <ul><li>Comprueba la banda: sin grietas, cortes ni zonas desgastadas.</li><li>Asegura bien los anclajes y tira suave para comprobar que no ceden.</li><li>Deja espacio libre y un suelo que no resbale.</li></ul>
+      <div class="note">Si notas dolor (no la molestia muscular normal), para el ejercicio.</div></div>
+      <div class="tr-actions"><button class="btn primary big" data-act="t-go">Todo revisado, empezar</button></div></div>`;
+  }
+  if(T.fase==='fin'){
+    const seg=Math.round((T.tFin-T.t0-T.pausadoTotal)/1000);
+    return `<div class="tr">${topHTML('Terminada')}<div class="safe">
+      <h2>Sesión terminada</h2><p class="hint" style="margin-top:6px">Buen trabajo. Estira lo que lo necesite y bebe agua.</p>
+      <div class="stats"><div class="stat"><b>${fmt(seg)}</b><span>tiempo</span></div><div class="stat"><b>${T.seriesHechas}</b><span>series</span></div><div class="stat"><b>${T.ejHechos}</b><span>ejercicios</span></div></div>
+      ${T.saltados?`<p class="hint">Saltaste ${T.saltados} ejercicio${T.saltados>1?'s':''}.</p>`:''}</div>
+      <div class="tr-actions"><button class="btn primary big" data-act="t-guardar">Guardar y salir</button><button class="btn" data-act="t-descartar">Salir sin guardar</button></div></div>`;
+  }
+  const n=T.items.length, sub=`${catTxt(e)}, ejercicio ${T.i+1} de ${n}`;
+  if(T.fase==='trabajo'){
+    const mid=e.t==='s'
+      ?`<div class="big" id="clock">${fmt(it.v)}</div><div class="lbl">tiempo</div>`
+      :`<div class="big">${it.v}</div><div class="lbl">${esc(uni(e))}</div><div class="clk" id="clock">0:00</div>`;
+    return `<div class="tr">${topHTML(sub)}${barHTML()}<div class="tr-main">
+      <p class="tr-set">Serie ${T.s} de ${it.s}</p><h2 class="tr-name">${esc(e.n)}</h2>
+      ${ringHTML('work',mid)}
+      ${e.t==='r'?'<p class="tr-sub">El aro marca un ritmo orientativo de 3 s por repetición.</p>':''}
+      <div class="tip"><b>Ancla:</b> ${esc(e.anc)}</div>
+      <button class="linkbtn" data-act="t-ficha">Cómo se hace</button></div>
+      <div class="tr-actions">${T.pausa?'<button class="btn primary big" data-act="t-pausa">Continuar</button>':'<button class="btn primary big" data-act="t-hecho">Hecho</button>'}<button class="btn" data-act="t-saltar">Saltar ejercicio</button></div></div>`;
+  }
+  // descanso
+  const nueva=T.s===1;
+  const val=`${it.v} ${uni(e)}`;
+  return `<div class="tr rest">${topHTML(T.rotulo==='Prepárate'?'Prepárate':'Descanso')}${barHTML()}<div class="tr-main">
+    <p class="tr-set">${esc(T.rotulo)}</p>
+    ${ringHTML('rest',`<div class="big" id="clock">${fmt(T.dur)}</div><div class="lbl">descanso</div>`)}
+    <p class="tr-sub" style="margin-top:4px">Siguiente, serie ${T.s} de ${it.s}</p><h2 class="tr-name" style="font-size:clamp(22px,7vw,30px)">${esc(e.n)}</h2><p class="tr-sub">${esc(val)}</p>
+    ${nueva?`<div class="tip"><b>Ancla:</b> ${esc(e.anc)}<br><b>Inicio:</b> ${esc(e.ini)}</div>`:''}
+    <button class="linkbtn" data-act="t-ficha">Cómo se hace</button></div>
+    <div class="tr-actions">${T.pausa?'<button class="btn primary big" data-act="t-pausa">Continuar</button>':'<button class="btn primary big" data-act="t-sig">Siguiente</button>'}<div class="two"><button class="btn" data-act="t-mas">Más 15 s</button><button class="btn" data-act="t-saltar">Saltar ejercicio</button></div></div></div>`;
+}
+function renderTrain(){
+  const box=$('#train');
+  if(!T){ box.hidden=true; box.innerHTML=''; document.body.classList.toggle('noscroll',UI.sheets.length>0); return; }
+  const keep=box.querySelector('.tr-main'), sc=keep?keep.scrollTop:0;
+  box.innerHTML=trainHTML(); box.hidden=false;
+  document.body.classList.add('noscroll');
+  const nm=box.querySelector('.tr-main'); if(nm) nm.scrollTop=sc;
+  tick(true);
+}
+function setRing(frac){
+  const p=$('#ringp'); if(p) p.style.strokeDashoffset=(RING*(1-clamp(frac,0,1))).toFixed(2);
+}
+function beepCuenta(rem){
+  const s=Math.ceil(rem);
+  if(s>=1&&s<=3&&T.lastBeep!==s){ T.lastBeep=s; beep(760,.1); }
+}
+function tick(force){
+  if(!T||(T.pausa&&!force)) return;
+  const now=Date.now();
+  if(T.fase==='trabajo'){
+    const it=T.items[T.i], e=it.ej, ck=$('#clock');
+    if(e.t==='s'){
+      const rem=(T.fin-now)/1000;
+      if(ck) ck.textContent=fmt(rem); setRing(rem/T.dur);
+      if(T.pausa) return;
+      beepCuenta(rem);
+      if(rem<=0){ beep(1100,.35); vib([200,80,200]); completarSerie(); }
+    }else{
+      const el=(now-T.ini)/1000;
+      if(ck) ck.textContent=fmt(Math.floor(el)); setRing(el/segTrabajo(e,it));
+    }
+  }else if(T.fase==='descanso'){
+    const rem=(T.fin-now)/1000, ck=$('#clock');
+    if(ck) ck.textContent=fmt(rem); setRing(rem/T.dur);
+    if(T.pausa) return;
+    beepCuenta(rem);
+    if(rem<=0){ beep(1100,.35); vib([200,80,200]); empezarTrabajo(); }
+  }
+}
+function empezarTrabajo(){
+  const it=T.items[T.i], now=Date.now();
+  T.fase='trabajo'; T.ini=now; T.lastBeep=null;
+  if(it.ej.t==='s'){ T.dur=it.v; T.fin=now+it.v*1000; } else { T.dur=null; T.fin=null; }
+  renderTrain();
+}
+function iniciarDescanso(sec,rotulo){
+  T.fase='descanso'; T.dur=sec; T.fin=Date.now()+sec*1000; T.lastBeep=null; T.rotulo=rotulo||'Descanso';
+  vib(60); renderTrain();
+}
+function avanzarItem(desc){
+  T.i++; T.s=1;
+  if(T.i>=T.items.length) return terminar();
+  if(desc>0) iniciarDescanso(desc); else empezarTrabajo();
+}
+function completarSerie(){
+  const it=T.items[T.i]; T.seriesHechas++;
+  if(T.s<it.s){ T.s++; if(it.d>0) iniciarDescanso(it.d); else empezarTrabajo(); }
+  else{ T.ejHechos++; avanzarItem(it.d); }
+}
+function terminar(){
+  T.fase='fin'; T.tFin=Date.now(); unwake();
+  beep(660,.2); setTimeout(()=>beep(880,.25),220); vib([150,80,150,80,300]);
+  renderTrain();
+}
+function startTraining(id){
+  const r=S.rutinas.find(x=>x.id===id); if(!r) return;
+  const items=r.items.map(it=>({ej:EJMAP[it.ej],s:it.s,v:it.v,d:it.d})).filter(x=>x.ej);
+  if(!items.length){ toast('Esta rutina no tiene ejercicios'); return; }
+  unlockAudio();
+  T={r,items,i:0,s:1,fase:'seguridad',pausa:false,pausadoTotal:0,seriesHechas:0,ejHechos:0,saltados:0,t0:Date.now(),timer:setInterval(tick,250)};
+  wake(); renderTrain();
+}
+function cerrarTrain(){
+  if(T&&T.timer) clearInterval(T.timer);
+  T=null; unwake(); renderTrain();
+}
+function guardarSesion(){
+  const seg=Math.round((T.tFin-T.t0-T.pausadoTotal)/1000);
+  S.sesiones.push({id:uid('s'),fecha:isoDate(),rutinaId:T.r.id,rutina:T.r.nombre,seg,series:T.seriesHechas,ejercicios:T.ejHechos,saltados:T.saltados});
+  save();
+}
+
+/* =====================================================================
+   Acciones (delegación de eventos)
+   ===================================================================== */
+const A={
+  tab(el){ UI.vista=el.dataset.v; render(); window.scrollTo(0,0); },
+  ficha(el){ openSheet({t:'ficha',id:el.dataset.id}); },
+  cerrar(){ closeSheet(); },
+  cf(el){ const c=UI.cf; const b=c&&c.botones[+el.dataset.i]; closeSheet(); if(b&&b.f) b.f(); },
+  dia(el){ openSheet({t:'dia',i:+el.dataset.i}); },
+  rdia(el){
+    const r=S.rutinas.find(x=>x.id===el.dataset.id), i=+el.dataset.i; if(!r) return;
+    r.dias=r.dias.includes(i)?r.dias.filter(x=>x!==i):[...r.dias,i].sort();
+    save(); render(); if(UI.sheets.length) renderSheet(true);
+  },
+  empezar(el){ startTraining(el.dataset.id); },
+  libre(el){ S.libre[isoDate()]=el.dataset.v; save(); render(); toast('Anotado: '+el.dataset.v); },
+  librex(){ delete S.libre[isoDate()]; save(); render(); },
+
+  /* rutinas */
+  nueva(){
+    UI.draft={nuevo:true,id:uid('r'),nombre:'',desc:'',dias:[],items:[{ej:'cal-marcha',s:1,v:EJMAP['cal-marcha'].v,d:10},{ej:'vu-nino',s:1,v:EJMAP['vu-nino'].v,d:10}]};
+    openSheet({t:'editor'});
+  },
+  editar(el){
+    const r=S.rutinas.find(x=>x.id===el.dataset.id); if(!r) return;
+    UI.draft=JSON.parse(JSON.stringify(r)); UI.draft.nuevo=false; openSheet({t:'editor'});
+  },
+  dup(el){
+    const r=S.rutinas.find(x=>x.id===el.dataset.id); if(!r) return;
+    const c=JSON.parse(JSON.stringify(r)); c.id=uid('r'); c.nombre=r.nombre+' (copia)'; c.dias=[];
+    S.rutinas.splice(S.rutinas.indexOf(r)+1,0,c); save(); render(); toast('Rutina duplicada');
+  },
+  borrar(el){
+    const r=S.rutinas.find(x=>x.id===el.dataset.id); if(!r) return;
+    confirmar({titulo:'¿Borrar «'+r.nombre+'»?',texto:'La rutina se elimina. Esta acción no se puede deshacer.',botones:[{t:'Cancelar'},{t:'Borrar rutina',cls:'danger',f:()=>{S.rutinas=S.rutinas.filter(x=>x.id!==r.id);save();render();toast('Rutina borrada');}}]});
+  },
+  'ed-cancel'(){
+    UI.draft=null; closeSheet();
+  },
+  'ed-dia'(el){ const d=UI.draft,i=+el.dataset.i; d.dias=d.dias.includes(i)?d.dias.filter(x=>x!==i):[...d.dias,i].sort(); renderSheet(true); },
+  'ed-st'(el){
+    const it=UI.draft.items[+el.dataset.i], f=el.dataset.f, e=EJMAP[it.ej];
+    const step=f==='v'?(e.t==='s'?5:1):f==='d'?5:1;
+    const lim=f==='s'?[1,12]:f==='v'?(e.t==='s'?[5,600]:[1,100]):[0,300];
+    it[f]=clamp(it[f]+(+el.dataset.d)*step,lim[0],lim[1]); renderSheet(true);
+  },
+  'ed-up'(el){ const a=UI.draft.items,i=+el.dataset.i; if(i>0){ [a[i-1],a[i]]=[a[i],a[i-1]]; renderSheet(true);} },
+  'ed-down'(el){ const a=UI.draft.items,i=+el.dataset.i; if(i<a.length-1){ [a[i+1],a[i]]=[a[i],a[i+1]]; renderSheet(true);} },
+  'ed-del'(el){ UI.draft.items.splice(+el.dataset.i,1); renderSheet(true); },
+  'ed-guardar'(){
+    const d=UI.draft;
+    if(!d.items.length){ toast('Añade al menos un ejercicio'); return; }
+    const r={id:d.id,nombre:(d.nombre||'').trim()||'Mi rutina',desc:(d.desc||'').trim(),dias:d.dias,items:d.items};
+    const k=S.rutinas.findIndex(x=>x.id===r.id);
+    if(k>=0) S.rutinas[k]=r; else S.rutinas.push(r);
+    save(); UI.draft=null; UI.sheets=[]; renderSheet(); render(); toast('Rutina guardada');
+  },
+  'pk-open'(){ UI.pk={q:'',g:'todos',n:0}; openSheet({t:'picker'}); },
+  'pk-g'(el){ UI.pk.g=el.dataset.v; renderSheet(true); },
+  'pk-add'(el){
+    const e=EJMAP[el.dataset.id], n=NIVEL[S.ajustes.nivel]||NIVEL.principiante, a=UI.draft.items;
+    const it=catE(e)==='f'?{ej:e.id,s:n.s,v:e.v,d:n.d}:{ej:e.id,s:1,v:e.v,d:10};
+    let pos=a.length;
+    if(catE(e)==='f'){ const k=a.findIndex(x=>catE(EJMAP[x.ej])==='vuelta'); if(k>=0) pos=k; }
+    else if(catE(e)==='cal'){ pos=0; a.forEach((x,i)=>{ if(catE(EJMAP[x.ej])==='cal') pos=i+1; }); }
+    a.splice(pos,0,it); UI.pk.n++;
+    const b=$('#sheets .sheet-foot .btn'); if(b) b.textContent='Listo ('+UI.pk.n+' añadidos)';
+    toast('Añadido: '+e.n);
+  },
+
+  /* biblioteca */
+  'lib-g'(el){ UI.lib.g=el.dataset.v; render(); },
+  'lib-b'(el){ UI.lib.b=el.dataset.v; render(); },
+
+  /* ajustes */
+  badd(){ S.ajustes.bandas.push({id:uid('b'),tipo:'mini',color:'verde',nota:''}); save(); render(); },
+  bdel(el){ S.ajustes.bandas=S.ajustes.bandas.filter(b=>b.id!==el.dataset.id); save(); render(); },
+  nivel(el){ S.ajustes.nivel=el.dataset.v; save(); render(); },
+  adia(el){ const i=+el.dataset.i,a=S.ajustes; a.dias=a.dias.includes(i)?a.dias.filter(x=>x!==i):[...a.dias,i].sort(); save(); render(); },
+  dur(el){ S.ajustes.duracion=+el.dataset.v; save(); render(); },
+  tema(el){ S.ajustes.tema=el.dataset.v; save(); render(); },
+  exportar(){
+    const data=JSON.stringify(Object.assign({app:'bandas-en-casa',exportado:new Date().toISOString()},S),null,2);
+    const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));
+    a.download='bandas-en-casa-'+isoDate()+'.json'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href),4000); toast('Copia exportada');
+  },
+  importar(){ $('#file').value=''; $('#file').click(); },
+  ejemplos(){
+    rutinasEjemplo(S.ajustes.nivel,[]).forEach(r=>S.rutinas.push(r)); save(); render(); toast('Rutinas de ejemplo añadidas');
+  },
+  reset(){
+    confirmar({titulo:'¿Borrar todos los datos?',texto:'Se eliminan ajustes, rutinas e historial de este dispositivo. Exporta una copia antes si quieres conservarlos.',botones:[{t:'Cancelar'},{t:'Borrar todo',cls:'danger',f:()=>{S=defaults();save();render();toast('Datos borrados');}}]});
+  },
+
+  /* entrenamiento */
+  'no-op'(){},
+  't-go'(){ unlockAudio(); T.t0=Date.now(); T.pausadoTotal=0; T.s=1; T.i=0; iniciarDescanso(8,'Prepárate'); },
+  't-hecho'(){ if(T.pausa) return; beep(700,.08); vib(40); completarSerie(); },
+  't-sig'(){ if(T.pausa) return; empezarTrabajo(); },
+  't-mas'(){ if(T.fase==='descanso'){ T.fin+=15000; T.dur+=15; renderTrain(); } },
+  't-saltar'(){
+    if(T.pausa) return;
+    T.saltados++; avanzarItem(8);
+  },
+  't-pausa'(){
+    if(!T) return;
+    if(!T.pausa){ T.pausa=true; T.pausaIni=Date.now(); }
+    else{ const dt=Date.now()-T.pausaIni; if(T.fin) T.fin+=dt; if(T.ini) T.ini+=dt; T.pausadoTotal+=dt; T.pausa=false; }
+    renderTrain();
+  },
+  't-ficha'(){ openSheet({t:'ficha',id:T.items[T.i].ej.id}); },
+  't-salir'(){
+    if(T.fase==='seguridad'){ cerrarTrain(); return; }
+    if(T.fase==='fin'){ cerrarTrain(); return; }
+    const b=[{t:'Seguir entrenando'}];
+    if(T.seriesHechas>0) b.push({t:'Terminar y guardar',cls:'primary',f:()=>{ T.tFin=Date.now(); if(T.pausa){T.pausadoTotal+=T.tFin-T.pausaIni;T.pausa=false;} guardarSesion(); cerrarTrain(); toast('Sesión guardada'); render(); }});
+    b.push({t:'Salir sin guardar',cls:'danger',f:()=>{ cerrarTrain(); }});
+    confirmar({titulo:'¿Salir del entrenamiento?',texto:T.seriesHechas>0?'Puedes guardar lo que has hecho o salir sin guardar.':'Todavía no has completado ninguna serie.',botones:b});
+  },
+  't-guardar'(){ guardarSesion(); cerrarTrain(); render(); toast('Sesión guardada'); },
+  't-descartar'(){ cerrarTrain(); render(); }
+};
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]'); if(!el) return;
+  const f=A[el.dataset.act]; if(f) f(el,e);
+});
+
+/* Campos de formulario */
+const B={
+  libq(el){ UI.lib.q=el.value; refrescaLib(); },
+  libmis(el){ S.ajustes.soloMisBandas=el.checked; save(); refrescaLib(); },
+  pkq(el){ UI.pk.q=el.value; const l=$('#pk-list'); if(l) l.innerHTML=listaEj(filtrar(UI.pk.q,UI.pk.g,'todas',misOn()),true); },
+  pkmis(el){ S.ajustes.soloMisBandas=el.checked; save(); renderSheet(true); },
+  ednombre(el){ UI.draft.nombre=el.value; },
+  eddesc(el){ UI.draft.desc=el.value; },
+  sonido(el){ S.ajustes.sonido=el.checked; save(); if(el.checked) beep(880,.12); },
+  vibracion(el){ S.ajustes.vibracion=el.checked; save(); if(el.checked) vib(80); },
+  btipo(el){ const b=S.ajustes.bandas.find(x=>x.id===el.dataset.id); if(b){ b.tipo=el.value; save(); } },
+  bcolor(el){ const b=S.ajustes.bandas.find(x=>x.id===el.dataset.id); if(b){ b.color=el.value; save(); const d=el.closest('.banda').querySelector('.dot'); if(d) d.style.background=colorHex(b.color); } },
+  bnota(el){ const b=S.ajustes.bandas.find(x=>x.id===el.dataset.id); if(b){ b.nota=el.value; save(); } }
+};
+function onCampo(e){ const el=e.target, k=el.dataset&&el.dataset.bind; if(k&&B[k]) B[k](el); }
+document.addEventListener('input',onCampo);
+document.addEventListener('change',e=>{ if(e.target.type==='checkbox'||e.target.tagName==='SELECT') onCampo(e); });
+
+$('#file').addEventListener('change',e=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{
+    try{
+      const o=JSON.parse(rd.result);
+      if(!o||typeof o!=='object'||!Array.isArray(o.rutinas)||!o.ajustes) throw new Error('formato');
+      confirmar({titulo:'¿Importar esta copia?',texto:'Se reemplazan los datos actuales (ajustes, rutinas e historial) por los de la copia.',botones:[{t:'Cancelar'},{t:'Importar',cls:'primary',f:()=>{S=migrate(o);save();render();toast('Copia importada');}}]});
+    }catch(err){ toast('El archivo no es una copia válida'); }
+  };
+  rd.readAsText(f);
+});
+
+/* =====================================================================
+   Arranque
+   ===================================================================== */
+try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+render();
+if('serviceWorker' in navigator&&location.protocol!=='file:'){
+  window.addEventListener('load',()=>{ navigator.serviceWorker.register('./sw.js').catch(()=>{}); });
+}
+})();
+</script>
+</body>
+</html>
