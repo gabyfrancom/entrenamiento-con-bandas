@@ -1,43 +1,33 @@
-BANDAS EN CASA - versión 2.2
+BANDAS EN CASA - versión 2.3
 
-QUÉ HAY EN LA CARPETA
+QUÉ HAY EN LA CARPETA (todo junto, sin subcarpetas)
   index.html              la app (tipografías incluidas dentro)
   sw.js                   permite usarla sin conexión
   manifest.webmanifest    permite instalarla en el móvil
   icon-*.png, apple-touch-icon.png
-  img/ejercicios/         122 fotos (2 por ejercicio, 61 ejercicios, en WebP)
+  *.webp                  122 fotos (2 por ejercicio, 61 ejercicios)
 
 ARCHIVO SUELTO PARA EL ORDENADOR
   bandas-en-casa-un-solo-archivo.html
   Es la misma app con las fotos y las tipografías dentro (unos 4,5 MB).
-  Se abre con doble clic, sin carpetas y sin internet. Sirve para verla en el ordenador.
-  (No se instala en el móvil ni guarda copia sin conexión: para eso usa la versión de GitHub Pages.)
+  Se abre con doble clic, sin más archivos y sin internet.
+  (No se instala en el móvil: para eso usa la versión de GitHub Pages.)
 
 SI NO SE VEN LAS FOTOS
   - Con la carpeta: no abras index.html desde dentro del ZIP. Extrae todo
-    (clic derecho > Extraer todo) y abre el index.html de la carpeta extraída;
-    la carpeta img tiene que estar al lado.
-  - En GitHub Pages: comprueba que img/ejercicios tenga las 122 fotos.
+    (clic derecho > Extraer todo) y abre el index.html de la carpeta extraída.
+  - En GitHub Pages: todas las fotos (.webp) tienen que estar junto a index.html.
     Ajustes > «Comprobar fotos» te dice cuántas faltan.
 
-CÓMO PUBLICARLA EN GITHUB PAGES
-  1. En github.com crea un repositorio nuevo, por ejemplo "bandas-en-casa".
-  2. Add file > Upload files. Desde el navegador GitHub deja subir unos 100 archivos por vez,
-     así que hazlo en tandas:
-       a) index.html, sw.js, manifest.webmanifest, los 4 iconos y LEEME.txt
-       b) la carpeta img/ejercicios en dos partes (por ejemplo, primero las fotos
-          que empiezan por a-l y después el resto)
-     Commit changes tras cada tanda.
-  3. Settings > Pages > Source: "Deploy from a branch", rama main, carpeta /(root). Save.
-  4. En uno o dos minutos tendrás una dirección como https://TU-USUARIO.github.io/bandas-en-casa/
-  5. Ábrela en el móvil e instálala:
-     Android (Chrome): menú ⋮ > Instalar aplicación.
-     iPhone (Safari): Compartir > Añadir a pantalla de inicio.
-  (Con GitHub Desktop o con git no hay ese límite de 100 archivos.)
+SUBIR A GITHUB PAGES DESDE EL NAVEGADOR
+  Desde el navegador GitHub deja subir unos 100 archivos por vez. Sube en tandas
+  (unos 60 por tanda) en https://github.com/TU-USUARIO/TU-REPO/upload/main
+  y pulsa "Commit changes" después de cada una.
+  Con GitHub Desktop o con git no hay ese límite.
 
 SI CAMBIAS ALGÚN ARCHIVO
-  Abre sw.js y sube el número de la línea  const CACHE = 'bandas-en-casa-v4';
-  (por ejemplo a v5). Así los móviles recogen la versión nueva.
+  Abre sw.js y sube el número de la línea  const CACHE = 'bandas-en-casa-v5';
+  (por ejemplo a v6). Así los móviles recogen la versión nueva.
 
 TUS DATOS
   Se guardan solo en el navegador de cada dispositivo (el móvil y el ordenador
