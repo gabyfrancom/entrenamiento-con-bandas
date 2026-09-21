@@ -1,0 +1,27 @@
+SUBIR "BANDAS EN CASA" A GITHUB (3 pasos, unos 3 minutos)
+
+Repositorio: https://github.com/gabyfrancom/entrenamiento-con-bandas
+IMPORTANTE: extrae este ZIP antes (clic derecho > Extraer todo).
+En cada paso, abre la página, entra en la carpeta indicada, selecciona TODOS los archivos
+(Ctrl+A), arrástralos a la página de GitHub (no arrastres la carpeta, solo los archivos),
+espera a que terminen de subirse, y pulsa el botón verde "Commit changes".
+
+PASO 1 - archivos sueltos (reemplazan a los que ya hay)
+  Página:  https://github.com/gabyfrancom/entrenamiento-con-bandas/upload/main
+  Archivos: los de la carpeta 1-archivos-sueltos
+
+PASO 2 - fotos, primera mitad (61 archivos)
+  Página:  https://github.com/gabyfrancom/entrenamiento-con-bandas/upload/main/img/ejercicios
+  Archivos: los de la carpeta 2-fotos-parte-1
+
+PASO 3 - fotos, segunda mitad (61 archivos)
+  Página:  https://github.com/gabyfrancom/entrenamiento-con-bandas/upload/main/img/ejercicios
+  Archivos: los de la carpeta 3-fotos-parte-2
+
+(La dirección de los pasos 2 y 3 ya crea la carpeta img/ejercicios sola.)
+
+DESPUÉS
+  - Espera 1 o 2 minutos y abre https://gabyfrancom.github.io/entrenamiento-con-bandas/
+  - Entra en Ajustes > "Comprobar fotos": debe decir 122 de 122.
+  - En el móvil, si sigue viendo la versión anterior, cierra la app del todo y vuelve a abrirla
+    (a veces hace falta abrirla dos veces para que recoja la actualización).
