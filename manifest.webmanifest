@@ -2,17 +2,32 @@
   "id": "./",
   "name": "Bandas en casa",
   "short_name": "Bandas",
-  "description": "Entrena en casa con bandas elásticas: rutinas, temporizador guiado y biblioteca de ejercicios.",
+  "description": "Entrena en casa con bandas elásticas y sal a correr con planes guiados: rutinas, temporizador, fotos de ejercicios y running.",
   "lang": "es",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#111a21",
-  "theme_color": "#111a21",
+  "background_color": "#0d0817",
+  "theme_color": "#0d0817",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
